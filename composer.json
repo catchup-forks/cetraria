@@ -1,6 +1,7 @@
 {
   "require": {
     "php": "~5.5",
+    "phalcon/incubator": "2.0.*@dev",
     "vlucas/phpdotenv": "~2.0"
   }
 }

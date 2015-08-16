@@ -1,5 +1,8 @@
 <?php
 
+$errorLogger =  new \Phalcon\Logger\Adapter\File(getenv('BASE_DIR') . 'var/logs/' . APPLICATION_ENV . '.error.log');
+$errorLogger->setFormatter(new \Phalcon\Logger\Formatter\Line('[%date%][%type%] %message%', 'Y-m-d H:i:s O'));
+
 return [
     'application' => [
         'baseDir' => getenv('BASE_DIR'),
@@ -17,4 +20,9 @@ return [
             'date'    => 'Y-m-d H:i:s O'
         ]
     ],
+    'error' => [
+        'logger'     => $errorLogger,
+        'controller' => 'error',
+        'action'     => 'index'
+    ]
 ];
