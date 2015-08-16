@@ -1,0 +1,17 @@
+# PhpStorm
+.idea/
+
+# Composer
+composer.lock
+composer.phar
+vendor/
+
+# Application environment variables
+.env
+
+# Nginx configs
+/config/nginx/development.conf
+
+# Phalcon Developer Tools
+public/webtools.config.php
+public/webtools.php
