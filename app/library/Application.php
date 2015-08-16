@@ -14,6 +14,11 @@ class Application extends PhApplication
 
     const DEFAULT_MODULE = 'core';
 
+    const ENV_PRODUCTION  = ENV_PRODUCTION;
+    const ENV_STAGING     = ENV_STAGING;
+    const ENV_TEST        = ENV_TEST;
+    const ENV_DEVELOPMENT = ENV_DEVELOPMENT;
+
     /**
      * Application config
      * @var Config
@@ -29,7 +34,7 @@ class Application extends PhApplication
     {
         $di = $di ?: new FactoryDefault;
 
-        $this->config = new Config(require_once BASE_DIR . 'config' . DS . APP_STAGE . '.php');
+        $this->config = new Config(require_once BASE_DIR . 'config' . DS . APPLICATION_ENV . '.php');
 
         // Setup Registry
         $registry = new Registry;

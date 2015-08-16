@@ -8,6 +8,7 @@ use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Logger\Adapter\File as FileLogger;
 use Phalcon\Logger\Formatter\Line as FormatterLine;
 use Phalcon\Loader;
+use Phalcon\Error\Handler as ErrorHandler;
 
 trait Initializer
 {
@@ -15,6 +16,7 @@ trait Initializer
         'normal' => [
             'logger',
             'loader',
+            'environment',
         ],
         'cli'    => [],
         'rest'   => [],
@@ -64,7 +66,7 @@ trait Initializer
                 $date   = $config->profiling->logger->date;
                 $format = $format ?: $config->profiling->logger->format;
 
-                $logger = new FileLogger($path . APP_STAGE . '.' . $mode . '.' . $file . '.log');
+                $logger = new FileLogger($path . APPLICATION_ENV . '.' . $mode . '.' . $file . '.log');
                 $formatter = new FormatterLine($format, $date);
                 $logger->setFormatter($formatter);
 
@@ -115,5 +117,19 @@ trait Initializer
         $di->setShared('loader', $loader);
 
         return $loader;
+    }
+
+    /**
+     * Initialize The Application Environment.
+     *
+     * @param DiInterface   $di     Dependency Injector
+     * @param Config        $config App config
+     * @param EventsManager $em     Events Manager
+     *
+     * @return Loader
+     */
+    protected function initEnvironment(DiInterface $di, Config $config, EventsManager $em)
+    {
+        ErrorHandler::register();
     }
 }
