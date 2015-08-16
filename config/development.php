@@ -1,7 +1,7 @@
 <?php
 
-$errorLogger =  new \Phalcon\Logger\Adapter\File(getenv('BASE_DIR') . 'var/logs/' . APPLICATION_ENV . '.error.log');
-$errorLogger->setFormatter(new \Phalcon\Logger\Formatter\Line('[%date%][%type%] %message%', 'Y-m-d H:i:s O'));
+use Phalcon\Logger\Adapter\File as FileLogger;
+use Phalcon\Logger\Formatter\Line as FormatterLine;
 
 return [
     'application' => [
@@ -21,7 +21,8 @@ return [
         ]
     ],
     'error' => [
-        'logger'     => $errorLogger,
+        'logger'     => new FileLogger(getenv('BASE_DIR') . 'var/logs/' . APPLICATION_ENV . '.error.log'),
+        'formatter'  => new FormatterLine('[%date%][%type%] %message%', 'Y-m-d H:i:s O'),
         'controller' => 'error',
         'action'     => 'index'
     ]
