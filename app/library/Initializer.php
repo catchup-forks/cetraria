@@ -90,12 +90,17 @@ trait Initializer
         $registry = $di->get('registry');
 
         $namespaces = [];
-        $bootstraps = [];
+        $modules    = [];
 
-        foreach ($registry->modules as $module) {
-            $moduleName = ucfirst($module);
-            $namespaces[$moduleName] = $registry->directories->modules . $moduleName . DS;
-            $bootstraps[$module] = $moduleName . '\Bootstrap';
+        if ('rest' !== $this->mode) {
+            foreach ($registry->modules as $module) {
+                $moduleName              = ucfirst($module);
+                $namespaces[$moduleName] = $registry->directories->modules . $moduleName . DS;
+                $modules[$module]        = [
+                    'className' => $moduleName . '\Module',
+                    'path'      => $namespaces[$moduleName] . 'Module.php',
+                ];
+            }
         }
 
         $namespaces['Plugin']  = $registry->directories->plugins;
@@ -104,11 +109,36 @@ trait Initializer
         $loader = new Loader;
         $loader->registerNamespaces($namespaces);
 
-        if ($config->application->debug) {
+        if ($config->get('application')->debug) {
             $em->attach('loader', function ($event, $loader) use ($di) {
-                if ($event->getType() == 'beforeCheckPath') {
-                    $logger = $di->get('logger', ['autoload']);
-                    $logger->debug('Before check path: '. $loader->getCheckedPath());
+                /**
+                 * @var \Phalcon\Events\Event $event
+                 * @var \Phalcon\Loader $loader
+                 * @var \Phalcon\Logger\Adapter\File $logger
+                 */
+                $logger = $di->get('logger', ['autoload']);
+
+                if ('beforeCheckPath' == $event->getType()) {
+                    $logger->debug('Before check path: ' . $loader->getCheckedPath());
+                }
+
+                if ('pathFound' == $event->getType()) {
+                    $logger->debug('Path found: ' . $loader->getFoundPath());
+                }
+
+                if ('afterCheckClass' == $event->getType()) {
+                    $logger->debug(
+                        'Class not found. Current loader settings: ' .
+                        json_encode(
+                            [
+                                'classes'    => $loader->getClasses(),
+                                'namespaces' => $loader->getNamespaces(),
+                                'prefixes'   => $loader->getPrefixes(),
+                                'dirs'       => $loader->getDirs()
+                            ],
+                            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+                        )
+                    );
                 }
             });
         }
@@ -116,7 +146,10 @@ trait Initializer
         $loader->setEventsManager($em);
 
         $loader->register();
-        $this->registerModules($bootstraps);
+
+        if ('rest' !== $this->mode) {
+            $this->registerModules($modules);
+        }
 
         $di->setShared('loader', $loader);
 
