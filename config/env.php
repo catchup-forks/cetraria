@@ -1,17 +1,20 @@
 <?php
 
+if (!is_readable(__DIR__ . '/../vendor/autoload.php')) {
+    throw new \RuntimeException('Unable to locate autoloader. Run `composer install` from the project root directory.');
+}
+
+// Check phalcon framework installation.
+if (!extension_loaded('phalcon')) {
+    throw new \RuntimeException('Install Phalcon framework %s' . getenv('PHALCON_VERSION_REQUIRED'));
+}
+
 // Include Composer autoloader
 include __DIR__ . '/../vendor/autoload.php';
 
 // Load environment variables
 $dotenv = new Dotenv\Dotenv(realpath(__DIR__ . '/../'));
 $dotenv->load();
-
-// Check phalcon framework installation.
-if (!extension_loaded('phalcon')) {
-    printf('Install Phalcon framework %s', getenv('PHALCON_VERSION_REQUIRED'));
-    exit(1);
-}
 
 /**
  * @const ENV_PRODUCTION Application production stage
@@ -75,6 +78,9 @@ define('DEV_IP', getenv('DEV_IP'));
 
 // Set the default locale
 setlocale(LC_ALL, getenv('LOCALE'));
+
+// Sets the default timezone used by all date/time function
+date_default_timezone_set(getenv('TIMEZONE'));
 
 if (function_exists('mb_internal_encoding')) {
     // Set the MB extension encoding to the same character set
