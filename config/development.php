@@ -10,6 +10,7 @@ return [
         'debug'   => true,
     ],
     'modules' => [
+        'user'
     ],
     'logger' => [
         'enabled' => true,

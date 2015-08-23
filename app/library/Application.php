@@ -39,7 +39,7 @@ class Application extends PhApplication
         // Setup Registry
         $registry = new Registry;
         $registry->modules = array_merge(
-            [self::DEFAULT_MODULE, 'user'],
+            [self::DEFAULT_MODULE],
             $this->config->modules->toArray()
         );
 
