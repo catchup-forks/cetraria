@@ -11,19 +11,19 @@ return [
     ],
     'modules' => [
     ],
-    'profiling' => [
+    'logger' => [
         'enabled' => true,
-        'logger' => [
-            'enabled' => true,
-            'path'    => getenv('BASE_DIR') . 'var/logs/',
-            'format'  => '[%date%][%type%] %message%',
-            'date'    => 'Y-m-d H:i:s O'
-        ]
+        'path'    => getenv('BASE_DIR') . 'var/logs/',
+        'format'  => '[%date%][%type%] %message%',
+        'date'    => 'Y-m-d H:i:s O'
     ],
     'error' => [
         'logger'     => new FileLogger(getenv('BASE_DIR') . 'var/logs/' . APPLICATION_ENV . '.error.log'),
         'formatter'  => new FormatterLine('[%date%][%type%] %message%', 'Y-m-d H:i:s O'),
         'controller' => 'error',
         'action'     => 'index'
-    ]
+    ],
+    'cache' => [
+        'adapter' => 'Memcache'
+    ],
 ];

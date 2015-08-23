@@ -16,7 +16,7 @@ trait Initializer
         'normal' => [
             'logger',
             'loader',
-            'environment',
+            'cache',
         ],
         'cli'    => [],
         'rest'   => [],
@@ -49,7 +49,7 @@ trait Initializer
     }
 
     /**
-     * Initialize The Logger.
+     * Initialize the Logger.
      *
      * @param DiInterface   $di     Dependency Injector
      * @param Config        $config App config
@@ -59,24 +59,24 @@ trait Initializer
      */
     protected function initLogger(DiInterface $di, Config $config, EventsManager $em)
     {
-        if ($config->profiling->logger->enabled) {
-            $mode = $this->mode;
-            $di->set('logger', function ($file = 'main', $format = null) use ($config, $mode) {
-                $path   = $config->profiling->logger->path;
-                $date   = $config->profiling->logger->date;
-                $format = $format ?: $config->profiling->logger->format;
+        ErrorHandler::register();
 
-                $logger = new FileLogger($path . APPLICATION_ENV . '.' . $mode . '.' . $file . '.log');
-                $formatter = new FormatterLine($format, $date);
-                $logger->setFormatter($formatter);
+        $mode = $this->mode;
+        $di->set('logger', function ($file = 'main', $format = null) use ($config, $mode) {
+            $path   = $config->logger->path;
+            $date   = $config->logger->date;
+            $format = $format ?: $config->logger->format;
 
-                return $logger;
-            });
-        }
+            $logger = new FileLogger($path . APPLICATION_ENV . '.' . $mode . '.' . $file . '.log');
+            $formatter = new FormatterLine($format, $date);
+            $logger->setFormatter($formatter);
+
+            return $logger;
+        });
     }
 
     /**
-     * Initialize The Loader.
+     * Initialize the Loader.
      *
      * @param DiInterface   $di     Dependency Injector
      * @param Config        $config App config
@@ -101,18 +101,22 @@ trait Initializer
         $namespaces['Plugin']  = $registry->directories->plugins;
         $namespaces['Library'] = $registry->directories->library;
 
-        $di->get('logger', ['loader'])->debug(json_encode($namespaces, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-
         $loader = new Loader;
         $loader->registerNamespaces($namespaces);
 
         if ($config->application->debug) {
-            $loader->setEventsManager($em);
+            $em->attach('loader', function ($event, $loader) use ($di) {
+                if ($event->getType() == 'beforeCheckPath') {
+                    $logger = $di->get('logger', ['autoload']);
+                    $logger->debug('Before check path: '. $loader->getCheckedPath());
+                }
+            });
         }
+
+        $loader->setEventsManager($em);
 
         $loader->register();
         $this->registerModules($bootstraps);
-        $di->get('logger', ['loader'])->debug(json_encode($bootstraps, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
         $di->setShared('loader', $loader);
 
@@ -120,7 +124,7 @@ trait Initializer
     }
 
     /**
-     * Initialize The Application Environment.
+     * Initialize the Cache.
      *
      * @param DiInterface   $di     Dependency Injector
      * @param Config        $config App config
@@ -128,8 +132,10 @@ trait Initializer
      *
      * @return Loader
      */
-    protected function initEnvironment(DiInterface $di, Config $config, EventsManager $em)
+    protected function initCache(DiInterface $di, Config $config, EventsManager $em)
     {
-        ErrorHandler::register();
+        $cacheConfig  = $config->cache->toArray();
+        $cacheAdapter = '\Phalcon\Cache\Backend\\' . $cacheConfig['adapter'];
+        unset($cacheConfig['adapter']);
     }
 }
