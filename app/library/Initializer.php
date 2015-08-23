@@ -40,9 +40,9 @@ trait Initializer
 
         foreach ($this->loaders[$mode] as $service) {
             $serviceName = ucfirst($service);
-            $eventsManager->fire('init:before' . $serviceName, null);
+            $eventsManager->fire('init:beforeInit' . $serviceName, $this);
             $result = $this->{'init' . $serviceName}($di, $this->config, $eventsManager);
-            $eventsManager->fire('init:after' . $serviceName, $result);
+            $eventsManager->fire('init:afterInit' . $serviceName, $this, $result, false);
         }
 
         $di->setShared('eventsManager', $eventsManager);
@@ -127,17 +127,21 @@ trait Initializer
                 }
 
                 if ('afterCheckClass' == $event->getType()) {
+                    $data = [
+                        'classes'    => $loader->getClasses(),
+                        'namespaces' => $loader->getNamespaces(),
+                        'dirs'       => $loader->getDirs(),
+                    ];
+
+                    // From Phalcon 2.1.0 version has been removed support for prefixes strategy
+                    // @deprecated
+                    if (method_exists($loader, 'getPrefixes')) {
+                        $data['prefixes'] = $loader->getPrefixes();
+                    }
+
                     $logger->debug(
                         'Class not found. Current loader settings: ' .
-                        json_encode(
-                            [
-                                'classes'    => $loader->getClasses(),
-                                'namespaces' => $loader->getNamespaces(),
-                                'prefixes'   => $loader->getPrefixes(),
-                                'dirs'       => $loader->getDirs()
-                            ],
-                            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-                        )
+                        json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
                     );
                 }
             });
