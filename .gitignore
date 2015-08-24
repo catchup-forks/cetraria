@@ -9,8 +9,13 @@ vendor/
 # Application environment variables
 .env
 
-# Nginx configs
+# App config
+/config/development.php
+/config/production.php
+
+# Nginx config
 /config/nginx/development.conf
+/config/nginx/production.conf
 
 # Phalcon Developer Tools
 public/webtools.config.php

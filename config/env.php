@@ -62,7 +62,7 @@ define('DS', DIRECTORY_SEPARATOR);
 define('NAMESPACE_SEPARATOR', '\\');
 
 /**
- * @const DS Shortcut for NAMESPACE_SEPARATOR
+ * @const NS Shortcut for NAMESPACE_SEPARATOR
  */
 define('NS', NAMESPACE_SEPARATOR);
 
