@@ -1,6 +1,6 @@
 <?php
 
-namespace Library;
+namespace Cetraria\Library;
 
 use Phalcon\Mvc\Application as PhApplication;
 use Phalcon\Di\FactoryDefault;
@@ -35,13 +35,11 @@ class Application extends PhApplication
         $di = $di ?: new FactoryDefault;
 
         $this->config = new Config(require_once BASE_DIR . 'config' . DS . APPLICATION_ENV . '.php');
+        $modules = array_filter($this->config->modules->toArray());
 
         // Setup Registry
         $registry = new Registry;
-        $registry->modules = array_merge(
-            [self::DEFAULT_MODULE],
-            $this->config->modules->toArray()
-        );
+        $registry->modules = array_merge([self::DEFAULT_MODULE], array_keys($modules));
 
         $registry->directories = (object)[
             'modules' => BASE_DIR . 'app/modules/',

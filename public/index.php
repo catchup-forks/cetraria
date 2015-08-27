@@ -6,7 +6,7 @@ require realpath(dirname(dirname(__FILE__))) . '/config/env.php';
 require_once BASE_DIR . 'app/library/Initializer.php';
 require_once BASE_DIR . 'app/library/Application.php';
 
-$application = new Library\Application;
+$application = new Cetraria\Library\Application;
 $application->init();
 
 

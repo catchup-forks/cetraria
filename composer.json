@@ -1,4 +1,5 @@
 {
+  "name": "sergeyklay/cetraria",
   "require": {
     "php": "~5.5",
     "phalcon/incubator": "2.0.*@dev",
