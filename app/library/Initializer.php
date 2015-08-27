@@ -9,6 +9,7 @@ use Phalcon\Logger\Adapter\File as FileLogger;
 use Phalcon\Logger\Formatter\Line as FormatterLine;
 use Phalcon\Loader;
 use Phalcon\Error\Handler as ErrorHandler;
+use Cetraria\Library\Listeners\Initializer as InitListener;
 
 trait Initializer
 {
@@ -39,6 +40,7 @@ trait Initializer
         $this->initLogger($di, $this->config, $eventsManager);
         $this->initLoader($di, $this->config, $eventsManager);
 
+        $eventsManager->attach('init', new InitListener($di, $eventsManager));
         $this->setEventsManager($eventsManager);
 
         foreach ($this->loaders[$mode] as $service) {
