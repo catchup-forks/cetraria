@@ -3,6 +3,8 @@
 use Phalcon\Logger\Adapter\File as FileLogger;
 use Phalcon\Logger\Formatter\Line as FormatterLine;
 
+$logFormat = ['[%date%][%type%] %message%', 'Y-m-d H:i:s O'];
+
 return [
     'application' => [
         'baseDir' => getenv('BASE_DIR'),
@@ -15,12 +17,12 @@ return [
     'logger' => [
         'enabled' => true,
         'path'    => getenv('BASE_DIR') . 'var/logs/',
-        'format'  => '[%date%][%type%] %message%',
-        'date'    => 'Y-m-d H:i:s O'
+        'format'  => $logFormat[0],
+        'date'    => $logFormat[1]
     ],
     'error' => [
         'logger'     => new FileLogger(getenv('BASE_DIR') . 'var/logs/' . APPLICATION_ENV . '.error.log'),
-        'formatter'  => new FormatterLine('[%date%][%type%] %message%', 'Y-m-d H:i:s O'),
+        'formatter'  => new FormatterLine($logFormat[0], $logFormat[1]),
         'controller' => 'error',
         'action'     => 'index'
     ],
