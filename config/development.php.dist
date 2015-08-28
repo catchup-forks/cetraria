@@ -26,6 +26,10 @@ return [
         'controller' => 'error',
         'action'     => 'index'
     ],
+    'annotations' => [
+        'adapter'        => 'Files',
+        'annotationsDir' => getenv('BASE_DIR') . 'var/cache/annotations/',
+    ],
     'cache' => [
         'adapter' => 'Memcache'
     ],

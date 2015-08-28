@@ -11,3 +11,6 @@ $application->init();
 
 
 var_dump($application);
+
+
+var_dump(class_exists('Abc\Cde'));

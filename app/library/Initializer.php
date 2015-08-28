@@ -4,18 +4,19 @@ namespace Cetraria\Library;
 
 use Phalcon\Config;
 use Phalcon\DiInterface;
-use Phalcon\Events\Manager as EventsManager;
-use Phalcon\Logger\Adapter\File as FileLogger;
-use Phalcon\Logger\Formatter\Line as FormatterLine;
+use Phalcon\Events\Manager                 as EventsManager;
+use Phalcon\Logger\Adapter\File            as FileLogger;
+use Phalcon\Logger\Formatter\Line          as FormatterLine;
 use Phalcon\Loader;
-use Phalcon\Error\Handler as ErrorHandler;
+use Phalcon\Error\Handler                  as ErrorHandler;
+use Phalcon\Annotations\Adapter\Memory     as AnnotationsMemory;
 use Cetraria\Library\Listeners\Initializer as InitListener;
 
 trait Initializer
 {
     protected $loaders = [
         'normal' => [
-            'cache',
+            'annotations',
         ],
         'cli'    => [],
         'rest'   => [],
@@ -161,7 +162,7 @@ trait Initializer
     }
 
     /**
-     * Initialize the Cache.
+     * Initialize the Annotations.
      *
      * @param DiInterface   $di     Dependency Injector
      * @param Config        $config App config
@@ -169,10 +170,17 @@ trait Initializer
      *
      * @return Loader
      */
-    protected function initCache(DiInterface $di, Config $config, EventsManager $em)
+    protected function initAnnotations(DiInterface $di, Config $config, EventsManager $em)
     {
-        $cacheConfig  = $config->cache->toArray();
-        $cacheAdapter = '\Phalcon\Cache\Backend\\' . $cacheConfig['adapter'];
-        unset($cacheConfig['adapter']);
+        $di->setShared('annotations', function () use ($config) {
+            if (!$config->get('application')->debug) {
+                $annotationsAdapter = '\Phalcon\Annotations\Adapter\\' . $config->annotations->adapter;
+                $adapter = new $annotationsAdapter($config->annotations->toArray());
+            } else {
+                $adapter = new AnnotationsMemory();
+            }
+
+            return $adapter;
+        });
     }
 }

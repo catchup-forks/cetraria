@@ -47,6 +47,5 @@ abstract class Base extends Injectable
         );
 
         $this->debug = (bool) $this->config->get('application')->debug;
-       // var_dump($this);die;
     }
 }
