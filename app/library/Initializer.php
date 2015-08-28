@@ -41,7 +41,10 @@ trait Initializer
         $this->initLogger($di, $this->config, $eventsManager);
         $this->initLoader($di, $this->config, $eventsManager);
 
-        $eventsManager->attach('init', new InitListener($di, $eventsManager));
+        if ($this->config->get('application')->debug) {
+            $eventsManager->attach('init', new InitListener($di, $eventsManager));
+        }
+
         $this->setEventsManager($eventsManager);
 
         foreach ($this->loaders[$mode] as $service) {

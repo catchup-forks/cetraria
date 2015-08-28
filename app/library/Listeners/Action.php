@@ -18,15 +18,13 @@ class Action extends Base
      */
     public function beforeExecuteRoute(Event $event, Dispatcher $dispatcher)
     {
-        if ($this->debug) {
-            $message = sprintf(
-                '%s::%s() started.',
-                get_class($dispatcher->getActiveController()),
-                $dispatcher->getActiveMethod()
-            );
+        $message = sprintf(
+            '%s::%s() started.',
+            get_class($dispatcher->getActiveController()),
+            $dispatcher->getActiveMethod()
+        );
 
-            $this->logger->debug($message);
-        }
+        $this->logger->debug($message);
     }
 
     /**
@@ -35,14 +33,12 @@ class Action extends Base
      */
     public function afterExecuteRoute(Event $event, Dispatcher $dispatcher)
     {
-        if ($this->debug) {
-            $message = sprintf(
-                '%s::%s() finished.',
-                get_class($dispatcher->getActiveController()),
-                $dispatcher->getActiveMethod()
-            );
+        $message = sprintf(
+            '%s::%s() finished.',
+            get_class($dispatcher->getActiveController()),
+            $dispatcher->getActiveMethod()
+        );
 
-            $this->logger->debug($message);
-        }
+        $this->logger->debug($message);
     }
 }
