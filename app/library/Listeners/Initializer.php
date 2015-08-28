@@ -2,46 +2,36 @@
 
 namespace Cetraria\Library\Listeners;
 
-use Phalcon\DiInterface;
-use Phalcon\Events\Manager as EventsManager;
-use Phalcon\Di\Injectable;
 use Phalcon\Events\Event;
-use Phalcon\Logger\Formatter\Line as FormatterLine;
 
 /**
- * Class Initializer
- * @package Cetraria\Library\Listeners
+ * Initializer listener
  *
- * @property \Phalcon\Config config
+ * @package Cetraria\Library\Listeners
  */
-class Initializer extends Injectable
+class Initializer extends Base
 {
-    /**
-     * @var \Phalcon\Logger\Adapter\File
-     */
-    protected $logger;
-
-    public function __construct(DiInterface $di, EventsManager $em)
-    {
-        $this->setDI($di);
-        $this->setEventsManager($em);
-
-        $this->logger = $di->get('logger', ['init']);
-        $this->logger->setFormatter(new FormatterLine(
-                $di->get('config')->logger->format,
-                $di->get('config')->logger->date
-            )
-        );
-    }
-
     public function beforeCache(Event $event, $source, $mode)
     {
-        if ($this->config->get('application')->debug) {
+        if ($this->debug) {
             if (is_object($source)) {
                 $source = get_class($source);
             }
 
-            $this->logger->debug(sprintf('%s: Init cache from %s as %s mode', $event->getType(), $source, $mode));
+            $this->logger->debug(sprintf('%s: Init Cache from %s as %s mode', $event->getType(), $source, $mode));
+        }
+
+        return true;
+    }
+
+    public function beforeAnnotations(Event $event, $source, $mode)
+    {
+        if ($this->debug) {
+            if (is_object($source)) {
+                $source = get_class($source);
+            }
+
+            $this->logger->debug(sprintf('%s: Init Annotations from %s as %s mode', $event->getType(), $source, $mode));
         }
 
         return true;
