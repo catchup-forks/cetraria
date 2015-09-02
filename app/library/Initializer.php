@@ -12,6 +12,7 @@ use Phalcon\Error\Handler              as ErrorHandler;
 use Phalcon\Annotations\Adapter\Memory as AnnotationsMemory;
 use Phalcon\Cache\Frontend\None        as FrontNone;
 use Phalcon\Cache\Frontend\Output      as FrontOutput;
+use Phalcon\Cache\Frontend\Data        as FrontData;
 
 trait Initializer
 {
@@ -19,6 +20,7 @@ trait Initializer
         'normal' => [
             'cache',
             'annotations',
+            'database'
         ],
         'cli'    => [],
         'rest'   => [],
@@ -176,9 +178,15 @@ trait Initializer
      */
     protected function initCache(DiInterface $di, Config $config, EventsManager $em)
     {
-        $cache = function () use ($config) {
-            $config  = $config->get('cache')->toArray();
+        $backend = function ($frontend, $config) {
             $backend = '\Phalcon\Cache\Backend\\' . $config['adapter'];
+            unset($config['adapter'], $config['lifetime']);
+
+            return new $backend($frontend, $config);
+        };
+
+        $di->setShared('viewCache', function () use ($config, $backend) {
+            $config  = $config->get('cache')->toArray();
 
             if (ENV_PRODUCTION === APPLICATION_ENV) {
                 $frontend = new FrontOutput(['lifetime' => $config['lifetime']]);
@@ -186,17 +194,19 @@ trait Initializer
                 $frontend = new FrontNone;
             }
 
-            unset($config['adapter'], $config['lifetime']);
-
-            return new $backend($frontend, $config);
-        };
-
-        $di->setShared('viewCache', function () use ($cache) {
-            return $cache();
+            return $backend($frontend, $config);
         });
 
-        $di->setShared('modelsCache', function () use ($cache) {
-            return $cache();
+        $di->setShared('modelsCache', function () use ($config, $backend) {
+            $config  = $config->get('cache')->toArray();
+
+            if (ENV_PRODUCTION === APPLICATION_ENV) {
+                $frontend = new FrontData(['lifetime' => $config['lifetime']]);
+            } else {
+                $frontend = new FrontNone;
+            }
+
+            return $backend($frontend, $config);
         });
     }
 
@@ -224,5 +234,10 @@ trait Initializer
 
             return $adapter;
         });
+    }
+
+    protected function initDatabase(DiInterface $di, Config $config, EventsManager $em)
+    {
+
     }
 }
