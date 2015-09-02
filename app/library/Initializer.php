@@ -10,12 +10,12 @@ use Phalcon\Logger\Formatter\Line          as FormatterLine;
 use Phalcon\Loader;
 use Phalcon\Error\Handler                  as ErrorHandler;
 use Phalcon\Annotations\Adapter\Memory     as AnnotationsMemory;
-use Cetraria\Library\Listeners\Initializer as InitListener;
 
 trait Initializer
 {
     protected $loaders = [
         'normal' => [
+            'cache',
             'annotations',
         ],
         'cli'    => [],
@@ -24,6 +24,9 @@ trait Initializer
 
     protected $mode = 'normal';
 
+    /**
+     * @param string $mode
+     */
     public function init($mode = 'normal')
     {
         if (!isset($this->loaders[$mode])) {
@@ -32,7 +35,7 @@ trait Initializer
 
         $this->mode = $mode;
 
-        // Set application main objects.
+        /** @var \Phalcon\DiInterface $di */
         $di = $this->_dependencyInjector;
         $di->setShared('app', $this);
 
@@ -41,17 +44,11 @@ trait Initializer
         $this->initLogger($di, $this->config, $eventsManager);
         $this->initLoader($di, $this->config, $eventsManager);
 
-        if ($this->config->get('application')->debug) {
-            $eventsManager->attach('init', new InitListener($di, $eventsManager));
-        }
-
         $this->setEventsManager($eventsManager);
 
         foreach ($this->loaders[$mode] as $service) {
             $serviceName = ucfirst($service);
-            $eventsManager->fire('init:before' . $serviceName, $this, $this->mode);
-            $result = $this->{'init' . $serviceName}($di, $this->config, $eventsManager);
-            $eventsManager->fire('init:after' . $serviceName, $this, $result, false);
+            $this->{'init' . $serviceName}($di, $this->config, $eventsManager);
         }
 
         $di->setShared('eventsManager', $eventsManager);
@@ -72,9 +69,11 @@ trait Initializer
 
         $mode = $this->mode;
         $di->set('logger', function ($file = 'main', $format = null) use ($config, $mode) {
-            $path   = $config->logger->path;
-            $date   = $config->logger->date;
-            $format = $format ?: $config->logger->format;
+            $configLogger = $config->get('logger')->toArray();
+
+            $path   = $configLogger['path'];
+            $date   = $configLogger['date'];
+            $format = $format ?: $configLogger['format'];
 
             $logger = new FileLogger($path . APPLICATION_ENV . '.' . $mode . '.' . $file . '.log');
             $formatter = new FormatterLine($format, $date);
@@ -165,22 +164,45 @@ trait Initializer
     }
 
     /**
+     * Initialize the Cache.
+     *
+     * @param DiInterface   $di     Dependency Injector
+     * @param Config        $config App config
+     * @param EventsManager $em     Events Manager
+     *
+     * @return void
+     */
+    protected function initCache(DiInterface $di, Config $config, EventsManager $em)
+    {
+        $di->setShared('viewCache', function () use ($config) {
+
+        });
+
+        $di->setShared('modelsCache', function () use ($config) {
+
+        });
+    }
+
+    /**
      * Initialize the Annotations.
      *
      * @param DiInterface   $di     Dependency Injector
      * @param Config        $config App config
      * @param EventsManager $em     Events Manager
      *
-     * @return Loader
+     * @return void
      */
     protected function initAnnotations(DiInterface $di, Config $config, EventsManager $em)
     {
         $di->setShared('annotations', function () use ($config) {
+            $annotationsConfig = $config->get('annotations')->toArray();
             if (!$config->get('application')->debug) {
-                $annotationsAdapter = '\Phalcon\Annotations\Adapter\\' . $config->annotations->adapter;
-                $adapter = new $annotationsAdapter($config->annotations->toArray());
+                $annotationsAdapter = '\Phalcon\Annotations\Adapter\\' . $annotationsConfig['adapter'];
+                unset($annotationsConfig['adapter']);
+
+                $adapter = new $annotationsAdapter($annotationsConfig);
             } else {
-                $adapter = new AnnotationsMemory();
+                $adapter = new AnnotationsMemory;
             }
 
             return $adapter;
