@@ -14,6 +14,11 @@ use Phalcon\Cache\Frontend\None        as FrontNone;
 use Phalcon\Cache\Frontend\Output      as FrontOutput;
 use Phalcon\Cache\Frontend\Data        as FrontData;
 
+/**
+ * Application Initializer
+ *
+ * @package Cetraria\Library
+ */
 trait Initializer
 {
     protected $loaders = [
