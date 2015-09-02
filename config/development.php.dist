@@ -31,6 +31,7 @@ return [
         'annotationsDir' => getenv('BASE_DIR') . 'var/cache/annotations/',
     ],
     'cache' => [
-        'adapter' => 'Memcache'
+        'adapter'  => 'Memory',
+        'lifetime' => 1 * 60 * 60,
     ],
 ];

@@ -4,12 +4,14 @@ namespace Cetraria\Library;
 
 use Phalcon\Config;
 use Phalcon\DiInterface;
-use Phalcon\Events\Manager                 as EventsManager;
-use Phalcon\Logger\Adapter\File            as FileLogger;
-use Phalcon\Logger\Formatter\Line          as FormatterLine;
+use Phalcon\Events\Manager             as EventsManager;
+use Phalcon\Logger\Adapter\File        as FileLogger;
+use Phalcon\Logger\Formatter\Line      as FormatterLine;
 use Phalcon\Loader;
-use Phalcon\Error\Handler                  as ErrorHandler;
-use Phalcon\Annotations\Adapter\Memory     as AnnotationsMemory;
+use Phalcon\Error\Handler              as ErrorHandler;
+use Phalcon\Annotations\Adapter\Memory as AnnotationsMemory;
+use Phalcon\Cache\Frontend\None        as FrontNone;
+use Phalcon\Cache\Frontend\Output      as FrontOutput;
 
 trait Initializer
 {
@@ -174,12 +176,27 @@ trait Initializer
      */
     protected function initCache(DiInterface $di, Config $config, EventsManager $em)
     {
-        $di->setShared('viewCache', function () use ($config) {
+        $cache = function () use ($config) {
+            $config  = $config->get('cache')->toArray();
+            $backend = '\Phalcon\Cache\Backend\\' . $config['adapter'];
 
+            if (ENV_PRODUCTION === APPLICATION_ENV) {
+                $frontend = new FrontOutput(['lifetime' => $config['lifetime']]);
+            } else {
+                $frontend = new FrontNone;
+            }
+
+            unset($config['adapter'], $config['lifetime']);
+
+            return new $backend($frontend, $config);
+        };
+
+        $di->setShared('viewCache', function () use ($cache) {
+            return $cache();
         });
 
-        $di->setShared('modelsCache', function () use ($config) {
-
+        $di->setShared('modelsCache', function () use ($cache) {
+            return $cache();
         });
     }
 
