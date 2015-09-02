@@ -1,14 +1,5 @@
 <?php
 
-if (!is_readable(__DIR__ . '/../vendor/autoload.php')) {
-    throw new \RuntimeException('Unable to locate autoloader. Run `composer install` from the project root directory.');
-}
-
-// Check phalcon framework installation.
-if (!extension_loaded('phalcon')) {
-    throw new \RuntimeException('Install Phalcon framework %s' . getenv('PHALCON_VERSION_REQUIRED'));
-}
-
 // Include Composer autoloader
 include __DIR__ . '/../vendor/autoload.php';
 
@@ -92,12 +83,12 @@ if (function_exists('mb_substitute_character')) {
     mb_substitute_character('none');
 }
 
-if (APPLICATION_ENV == ENV_PRODUCTION) {
+if (ENV_PRODUCTION === APPLICATION_ENV) {
     header_remove('X-Powered-By');
 }
 
 // Enable xdebug parameter collection in development mode to improve fatal stack traces.
 // Highly recommends use at least XDebug 2.2.3 for a better compatibility with Phalcon
-if (APPLICATION_ENV == ENV_DEVELOPMENT && extension_loaded('xdebug')) {
+if (ENV_DEVELOPMENT === APPLICATION_ENV && extension_loaded('xdebug')) {
     ini_set('xdebug.collect_params', 4);
 }
