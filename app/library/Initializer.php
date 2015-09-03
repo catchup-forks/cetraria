@@ -3,11 +3,11 @@
 namespace Cetraria\Library;
 
 use Phalcon\Config;
+use Phalcon\Loader;
 use Phalcon\DiInterface;
 use Phalcon\Events\Manager             as EventsManager;
 use Phalcon\Logger\Adapter\File        as FileLogger;
 use Phalcon\Logger\Formatter\Line      as FormatterLine;
-use Phalcon\Loader;
 use Phalcon\Error\Handler              as ErrorHandler;
 use Phalcon\Annotations\Adapter\Memory as AnnotationsMemory;
 use Phalcon\Cache\Frontend\None        as FrontNone;
@@ -15,6 +15,7 @@ use Phalcon\Cache\Frontend\Output      as FrontOutput;
 use Phalcon\Cache\Frontend\Data        as FrontData;
 use Phalcon\Mvc\Model\Manager          as ModelsManager;
 use Phalcon\Mvc\Model\MetaData\Memory  as MetaData;
+use Phalcon\Mvc\Router\Annotations     as AnnotationsRouter;
 
 /**
  * Application Initializer
@@ -81,11 +82,10 @@ trait Initializer
 
         $mode = $this->mode;
         $di->set('logger', function ($file = 'main', $format = null) use ($config, $mode) {
-            $configLogger = $config->get('logger')->toArray();
-
-            $path   = $configLogger['path'];
-            $date   = $configLogger['date'];
-            $format = $format ?: $configLogger['format'];
+            $config = $config->get('logger')->toArray();
+            $path   = $config['path'];
+            $date   = $config['date'];
+            $format = $format ?: $config['format'];
 
             $logger = new FileLogger($path . APPLICATION_ENV . '.' . $mode . '.' . $file . '.log');
             $formatter = new FormatterLine($format, $date);
@@ -194,21 +194,30 @@ trait Initializer
         };
 
         $di->setShared('viewCache', function () use ($config, $backend) {
-            $config  = $config->get('cache')->toArray();
-
             if (ENV_PRODUCTION === APPLICATION_ENV) {
+                $config   = $config->get('cache')->toArray();
                 $frontend = new FrontOutput(['lifetime' => $config['lifetime']]);
-            } else {
-                $frontend = new FrontNone;
-            }
 
-            return $backend($frontend, $config);
+                return $backend($frontend, $config);
+            } else {
+                return new FrontNone;
+            }
         });
 
         $di->setShared('modelsCache', function () use ($config, $backend) {
-            $config  = $config->get('cache')->toArray();
-
             if (ENV_PRODUCTION === APPLICATION_ENV) {
+                $config   = $config->get('cache')->toArray();
+                $frontend = new FrontData(['lifetime' => $config['lifetime']]);
+
+                return $backend($frontend, $config);
+            } else {
+                return new FrontNone;
+            }
+        });
+
+        $di->setShared('dataCache', function () use ($config, $backend) {
+            if (ENV_PRODUCTION === APPLICATION_ENV) {
+                $config   = $config->get('cache')->toArray();
                 $frontend = new FrontData(['lifetime' => $config['lifetime']]);
             } else {
                 $frontend = new FrontNone;
@@ -230,12 +239,12 @@ trait Initializer
     protected function initAnnotations(DiInterface $di, Config $config, EventsManager $em)
     {
         $di->setShared('annotations', function () use ($config) {
-            $annotationsConfig = $config->get('annotations')->toArray();
             if (ENV_PRODUCTION === APPLICATION_ENV) {
-                $annotationsAdapter = '\Phalcon\Annotations\Adapter\\' . $annotationsConfig['adapter'];
-                unset($annotationsConfig['adapter']);
+                $config  = $config->get('annotations')->toArray();
+                $adapter = '\Phalcon\Annotations\Adapter\\' . $config['adapter'];
+                unset($config['adapter']);
 
-                $adapter = new $annotationsAdapter($annotationsConfig);
+                $adapter = new $adapter($config);
             } else {
                 $adapter = new AnnotationsMemory;
             }
@@ -256,13 +265,11 @@ trait Initializer
     protected function initDatabase(DiInterface $di, Config $config, EventsManager $em)
     {
         $di->setShared('db', function () use ($config) {
-            $dbConfig = $config->get('database')->toArray();
-            $adapter = '\Phalcon\Db\Adapter\Pdo\\' . $dbConfig['adapter'];
+            $config  = $config->get('database')->toArray();
+            $adapter = '\Phalcon\Db\Adapter\Pdo\\' . $config['adapter'];
+            unset($config['adapter']);
 
-            unset($dbConfig['adapter']);
-
-            /** @var \Phalcon\Db\AdapterInterface $connection */
-            $connection = new $adapter($dbConfig);
+            $connection = new $adapter($config);
 
             return $connection;
         });
@@ -291,6 +298,6 @@ trait Initializer
 
     protected function initRouter(DiInterface $di, Config $config, EventsManager $em)
     {
-
+        $cache = $di->get('dataCache');
     }
 }
