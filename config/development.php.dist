@@ -3,7 +3,8 @@
 use Phalcon\Logger\Adapter\File as FileLogger;
 use Phalcon\Logger\Formatter\Line as FormatterLine;
 
-$logFormat = ['[%date%][%type%] %message%', 'Y-m-d H:i:s O'];
+$host      = explode('.', gethostname())[0];
+$logFormat = ["%date% $host php: [%type%] %message%", 'D j H:i:s'];
 
 return [
     'application' => [
