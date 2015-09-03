@@ -241,8 +241,27 @@ trait Initializer
         });
     }
 
+    /**
+     * Initialize the Database connection.
+     *
+     * @param DiInterface   $di     Dependency Injector
+     * @param Config        $config App config
+     * @param EventsManager $em     Events Manager
+     *
+     * @return void
+     */
     protected function initDatabase(DiInterface $di, Config $config, EventsManager $em)
     {
+        $di->setShared('db', function () use ($config) {
+            $dbConfig = $config->get('database')->toArrya();
+            $adapter = '\Phalcon\Db\Adapter\Pdo\\' . $dbConfig['adapter'];
 
+            unset($dbConfig['adapter']);
+
+            /** @var \Phalcon\Db\AdapterInterface $connection */
+            $connection = new $adapter($dbConfig);
+
+            return $connection;
+        });
     }
 }

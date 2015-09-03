@@ -34,4 +34,13 @@ return [
         'adapter'  => 'Memory',
         'lifetime' => 1 * 60 * 60,
     ],
+    'database' => [
+        'adapter'  => 'Postgresql',
+        'host'     => 'localhost',
+        'username' => 'cetraria',
+        'password' => '********',
+        'dbname'   => 'cetraria',
+        'port'     => 5432,
+        'schema'   => 'public',
+    ],
 ];
