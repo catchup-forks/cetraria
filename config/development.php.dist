@@ -43,4 +43,7 @@ return [
         'port'     => 5432,
         'schema'   => 'public',
     ],
+    'metadata' => [
+        'adapter'  => 'Memory',
+    ],
 ];

@@ -13,6 +13,8 @@ use Phalcon\Annotations\Adapter\Memory as AnnotationsMemory;
 use Phalcon\Cache\Frontend\None        as FrontNone;
 use Phalcon\Cache\Frontend\Output      as FrontOutput;
 use Phalcon\Cache\Frontend\Data        as FrontData;
+use Phalcon\Mvc\Model\Manager          as ModelsManager;
+use Phalcon\Mvc\Model\MetaData\Memory  as MetaData;
 
 /**
  * Application Initializer
@@ -25,7 +27,8 @@ trait Initializer
         'normal' => [
             'cache',
             'annotations',
-            'database'
+            'database',
+            'router'
         ],
         'cli'    => [],
         'rest'   => [],
@@ -127,7 +130,7 @@ trait Initializer
         $loader = new Loader;
         $loader->registerNamespaces($namespaces);
 
-        if ($config->get('application')->debug) {
+        if (ENV_DEVELOPMENT === APPLICATION_ENV) {
             $em->attach('loader', function ($event, $loader) use ($di) {
                 /**
                  * @var \Phalcon\Events\Event $event
@@ -228,7 +231,7 @@ trait Initializer
     {
         $di->setShared('annotations', function () use ($config) {
             $annotationsConfig = $config->get('annotations')->toArray();
-            if (!$config->get('application')->debug) {
+            if (ENV_PRODUCTION === APPLICATION_ENV) {
                 $annotationsAdapter = '\Phalcon\Annotations\Adapter\\' . $annotationsConfig['adapter'];
                 unset($annotationsConfig['adapter']);
 
@@ -253,7 +256,7 @@ trait Initializer
     protected function initDatabase(DiInterface $di, Config $config, EventsManager $em)
     {
         $di->setShared('db', function () use ($config) {
-            $dbConfig = $config->get('database')->toArrya();
+            $dbConfig = $config->get('database')->toArray();
             $adapter = '\Phalcon\Db\Adapter\Pdo\\' . $dbConfig['adapter'];
 
             unset($dbConfig['adapter']);
@@ -263,5 +266,31 @@ trait Initializer
 
             return $connection;
         });
+
+        $di->setShared('modelsManager', function () use ($config, $em) {
+            $modelsManager = new ModelsManager;
+            $modelsManager->setEventsManager($em);
+
+            return $modelsManager;
+        });
+
+        $di->setShared('modelsMetadata', function () use ($config, $em) {
+            if (ENV_PRODUCTION === APPLICATION_ENV) {
+                $config = $config->get('metadata')->toArray();
+                $adapter = '\Phalcon\Mvc\Model\Metadata\\' . $config['adapter'];
+                unset($config['adapter']);
+
+                $metaData = new $adapter($config);
+            } else {
+                $metaData = new MetaData;
+            }
+
+            return $metaData;
+        });
+    }
+
+    protected function initRouter(DiInterface $di, Config $config, EventsManager $em)
+    {
+
     }
 }
