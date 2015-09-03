@@ -54,4 +54,28 @@ class Application extends PhApplication
 
         parent::__construct($di);
     }
+
+    /**
+     * Runs the Application
+     *
+     * @return $this|string
+     */
+    public function run()
+    {
+        if (ENV_TEST === APPLICATION_ENV) {
+            return $this;
+        }
+
+        return $this->getOutput();
+    }
+
+    /**
+     * Get application output.
+     *
+     * @return string
+     */
+    public function getOutput()
+    {
+        return $this->handle()->getContent();
+    }
 }
