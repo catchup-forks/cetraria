@@ -298,8 +298,60 @@ trait Initializer
         });
     }
 
+    /**
+     * Initialize the Router.
+     *
+     * @param DiInterface   $di     Dependency Injector
+     * @param Config        $config App config
+     * @param EventsManager $em     Events Manager
+     *
+     * @return void
+     */
     protected function initRouter(DiInterface $di, Config $config, EventsManager $em)
     {
-        $cache = $di->get('dataCache');
+        $di->setShared('router', function () use ($di, $config, $em) {
+            $cache  = $di->get('dataCache');
+            $router = $cache->get('router_data');
+
+            if (ENV_DEVELOPMENT === APPLICATION_ENV || !$router) {
+                $save   = !$router;
+                $router = new AnnotationsRouter(false);
+
+                $moduleName = Application::DEFAULT_MODULE;
+                $namespace  = 'Cetraria\Modules\\' . ucfirst($moduleName) . '\Controllers';
+                $allModules = $di->get('registry')->modules;
+
+                if (!isset($_GET['_url'])) {
+                    $router->setUriSource(Router::URI_SOURCE_SERVER_REQUEST_URI);
+                }
+
+                $router->setDefaultModule($moduleName);
+                $router->setDefaultNamespace($namespace);
+                $router->setDefaultController('Index');
+                $router->setDefaultAction('index');
+                $router->removeExtraSlashes(true);
+                $router->setEventsManager($em);
+
+                foreach ($allModules as $module) {
+                    $moduleName = ucfirst($module);
+                    $dir = new \DirectoryIterator($di->get('registry')->directories->modules . $moduleName);
+
+                    foreach ($dir as $fileInfo) {
+                        if ($fileInfo->isDot() || false === strpos($fileInfo->getBasename(), 'Controller.php')) {
+                            continue;
+                        }
+
+                        $controller = $namespace . '\\' .$fileInfo->getBasename('Controller.php');
+                        $router->addModuleResource(strtolower($module), $controller);
+                    }
+                }
+
+                if ($save) {
+                    $cache->save('router_data', $router, $config->get('router')->cacheTtl);
+                }
+            }
+
+            return $router;
+        });
     }
 }

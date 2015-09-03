@@ -46,4 +46,7 @@ return [
     'metadata' => [
         'adapter'  => 'Memory',
     ],
+    'router' => [
+        'cacheTtl' => 24 * 60 * 60
+    ],
 ];
