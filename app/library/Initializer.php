@@ -4,6 +4,7 @@ namespace Cetraria\Library;
 
 use Phalcon\Config;
 use Phalcon\Loader;
+use Phalcon\Mvc\Router;
 use Phalcon\DiInterface;
 use Phalcon\Events\Manager             as EventsManager;
 use Phalcon\Logger\Adapter\File        as FileLogger;
@@ -187,43 +188,44 @@ trait Initializer
     protected function initCache(DiInterface $di, Config $config, EventsManager $em)
     {
         $backend = function ($frontend, $config) {
+            $config  = $config->get('cache')->toArray();
             $backend = '\Phalcon\Cache\Backend\\' . $config['adapter'];
             unset($config['adapter'], $config['lifetime']);
 
             return new $backend($frontend, $config);
         };
 
-        $di->setShared('viewCache', function () use ($config, $backend) {
-            if (ENV_PRODUCTION === APPLICATION_ENV) {
-                $config   = $config->get('cache')->toArray();
-                $frontend = new FrontOutput(['lifetime' => $config['lifetime']]);
+        $data = function () use ($config) {
+            $config  = $config->get('cache')->toArray();
 
-                return $backend($frontend, $config);
-            } else {
-                return new FrontNone;
-            }
+            return new FrontData(['lifetime' => $config['lifetime']]);
+        };
+
+        $output = function () use ($config) {
+            $config  = $config->get('cache')->toArray();
+
+            return new FrontOutput(['lifetime' => $config['lifetime']]);
+        };
+
+        $di->setShared('viewCache', function () use ($output, $backend, $config) {
+            return $backend(
+                ENV_PRODUCTION === APPLICATION_ENV ? $output() : new FrontNone,
+                $config
+            );
         });
 
-        $di->setShared('modelsCache', function () use ($config, $backend) {
-            if (ENV_PRODUCTION === APPLICATION_ENV) {
-                $config   = $config->get('cache')->toArray();
-                $frontend = new FrontData(['lifetime' => $config['lifetime']]);
-
-                return $backend($frontend, $config);
-            } else {
-                return new FrontNone;
-            }
+        $di->setShared('modelsCache', function () use ($data, $backend, $config) {
+            return $backend(
+                ENV_PRODUCTION === APPLICATION_ENV ? $data() : new FrontNone,
+                $config
+            );
         });
 
-        $di->setShared('dataCache', function () use ($config, $backend) {
-            if (ENV_PRODUCTION === APPLICATION_ENV) {
-                $config   = $config->get('cache')->toArray();
-                $frontend = new FrontData(['lifetime' => $config['lifetime']]);
-            } else {
-                $frontend = new FrontNone;
-            }
-
-            return $backend($frontend, $config);
+        $di->setShared('dataCache', function () use ($data, $backend, $config) {
+            return $backend(
+                ENV_PRODUCTION === APPLICATION_ENV ? $data() : new FrontNone,
+                $config
+            );
         });
     }
 
