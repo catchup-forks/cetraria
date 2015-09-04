@@ -45,7 +45,7 @@ trait Initializer
             'cache',
             'annotations',
             'database',
-            'router'
+            'router',
         ],
         'cli'    => [],
         'rest'   => [],
