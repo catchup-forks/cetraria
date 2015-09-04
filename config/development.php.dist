@@ -55,8 +55,10 @@ return [
         'annotationsDir' => getenv('BASE_DIR') . 'var/cache/annotations/',
     ],
     'cache' => [
-        'adapter'  => 'Memory',
+        'adapter'  => 'File',
         'lifetime' => 1 * 60 * 60,
+        'prefix'   => 'dara',
+        'cacheDir' => getenv('BASE_DIR') . 'var/cache/data/'
     ],
     'database' => [
         'adapter'  => 'Postgresql',
@@ -68,7 +70,8 @@ return [
         'schema'   => 'public',
     ],
     'metadata' => [
-        'adapter'  => 'Memory',
+        'adapter'     => 'Files',
+        'metaDataDir' => getenv('BASE_DIR') . 'var/cache/metadata/'
     ],
     'router' => [
         'cacheTtl' => 24 * 60 * 60

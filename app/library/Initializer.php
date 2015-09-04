@@ -21,17 +21,14 @@ use Phalcon\Config;
 use Phalcon\Loader;
 use Phalcon\Mvc\Router;
 use Phalcon\DiInterface;
-use Phalcon\Events\Manager             as EventsManager;
-use Phalcon\Logger\Adapter\File        as FileLogger;
-use Phalcon\Logger\Formatter\Line      as FormatterLine;
-use Phalcon\Error\Handler              as ErrorHandler;
-use Phalcon\Annotations\Adapter\Memory as AnnotationsMemory;
-use Phalcon\Cache\Frontend\None        as FrontNone;
-use Phalcon\Cache\Frontend\Output      as FrontOutput;
-use Phalcon\Cache\Frontend\Data        as FrontData;
-use Phalcon\Mvc\Model\Manager          as ModelsManager;
-use Phalcon\Mvc\Model\MetaData\Memory  as MetaData;
-use Phalcon\Mvc\Router\Annotations     as AnnotationsRouter;
+use Phalcon\Events\Manager         as EventsManager;
+use Phalcon\Logger\Adapter\File    as FileLogger;
+use Phalcon\Logger\Formatter\Line  as FormatterLine;
+use Phalcon\Error\Handler          as ErrorHandler;
+use Phalcon\Cache\Frontend\Output  as FrontOutput;
+use Phalcon\Cache\Frontend\Data    as FrontData;
+use Phalcon\Mvc\Model\Manager      as ModelsManager;
+use Phalcon\Mvc\Router\Annotations as AnnotationsRouter;
 
 /**
  * Application Initializer
@@ -226,24 +223,15 @@ trait Initializer
         };
 
         $di->setShared('viewCache', function () use ($output, $backend, $config) {
-            return $backend(
-                ENV_PRODUCTION === APPLICATION_ENV ? $output() : new FrontNone,
-                $config
-            );
+            return $backend($output(), $config);
         });
 
         $di->setShared('modelsCache', function () use ($data, $backend, $config) {
-            return $backend(
-                ENV_PRODUCTION === APPLICATION_ENV ? $data() : new FrontNone,
-                $config
-            );
+            return $backend($data(), $config);
         });
 
         $di->setShared('dataCache', function () use ($data, $backend, $config) {
-            return $backend(
-                ENV_PRODUCTION === APPLICATION_ENV ? $data() : new FrontNone,
-                $config
-            );
+            return $backend($data(), $config);
         });
     }
 
@@ -259,15 +247,11 @@ trait Initializer
     protected function initAnnotations(DiInterface $di, Config $config, EventsManager $em)
     {
         $di->setShared('annotations', function () use ($config) {
-            if (ENV_PRODUCTION === APPLICATION_ENV) {
-                $config  = $config->get('annotations')->toArray();
-                $adapter = '\Phalcon\Annotations\Adapter\\' . $config['adapter'];
-                unset($config['adapter']);
+            $config  = $config->get('annotations')->toArray();
+            $adapter = '\Phalcon\Annotations\Adapter\\' . $config['adapter'];
+            unset($config['adapter']);
 
-                $adapter = new $adapter($config);
-            } else {
-                $adapter = new AnnotationsMemory;
-            }
+            $adapter = new $adapter($config);
 
             return $adapter;
         });
@@ -302,15 +286,11 @@ trait Initializer
         });
 
         $di->setShared('modelsMetadata', function () use ($config, $em) {
-            if (ENV_PRODUCTION === APPLICATION_ENV) {
-                $config = $config->get('metadata')->toArray();
-                $adapter = '\Phalcon\Mvc\Model\Metadata\\' . $config['adapter'];
-                unset($config['adapter']);
+            $config = $config->get('metadata')->toArray();
+            $adapter = '\Phalcon\Mvc\Model\Metadata\\' . $config['adapter'];
+            unset($config['adapter']);
 
-                $metaData = new $adapter($config);
-            } else {
-                $metaData = new MetaData;
-            }
+            $metaData = new $adapter($config);
 
             return $metaData;
         });
@@ -328,6 +308,7 @@ trait Initializer
     protected function initRouter(DiInterface $di, Config $config, EventsManager $em)
     {
         $di->setShared('router', function () use ($di, $config, $em) {
+            /** @var \Phalcon\Cache\Backend\File $cache */
             $cache  = $di->get('dataCache');
             $router = $cache->get('router_data');
 
