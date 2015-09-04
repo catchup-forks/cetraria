@@ -308,28 +308,28 @@ trait Initializer
     protected function initRouter(DiInterface $di, Config $config, EventsManager $em)
     {
         $di->setShared('router', function () use ($di, $config, $em) {
-            /** @var \Phalcon\Cache\Backend\File $cache */
-            $cache  = $di->get('dataCache');
-            $router = $cache->get('router_data');
+            $cache     = $di->get('dataCache');
+            $resources = $cache->get('router_resources');
 
-            if (ENV_DEVELOPMENT === APPLICATION_ENV || !$router) {
-                $save   = !$router;
-                $router = new AnnotationsRouter(false);
+            $router = new AnnotationsRouter(false);
 
-                $moduleName = Application::DEFAULT_MODULE;
-                $namespace  = 'Cetraria\Modules\\' . ucfirst($moduleName) . '\Controllers';
-                $allModules = $di->get('registry')->modules;
+            $moduleName = Application::DEFAULT_MODULE;
+            $namespace  = 'Cetraria\Modules\\' . ucfirst($moduleName) . '\Controllers';
+            $allModules = $di->get('registry')->modules;
 
-                if (!isset($_GET['_url'])) {
-                    $router->setUriSource(Router::URI_SOURCE_SERVER_REQUEST_URI);
-                }
+            if (!isset($_GET['_url'])) {
+                $router->setUriSource(Router::URI_SOURCE_SERVER_REQUEST_URI);
+            }
 
-                $router->setDefaultModule($moduleName);
-                $router->setDefaultNamespace($namespace);
-                $router->setDefaultController('Index');
-                $router->setDefaultAction('index');
-                $router->removeExtraSlashes(true);
-                $router->setEventsManager($em);
+            $router->setDefaultModule($moduleName);
+            $router->setDefaultNamespace($namespace);
+            $router->setDefaultController('Index');
+            $router->setDefaultAction('index');
+            $router->removeExtraSlashes(true);
+            $router->setEventsManager($em);
+
+            if (ENV_DEVELOPMENT === APPLICATION_ENV || !$resources) {
+                $save = !$resources;
 
                 foreach ($allModules as $module) {
                     $moduleName = ucfirst($module);
@@ -341,13 +341,17 @@ trait Initializer
                         }
 
                         $controller = $namespace . '\\' .$fileInfo->getBasename('Controller.php');
-                        $router->addModuleResource(strtolower($module), $controller);
+                        $resources[strtolower($module)] = $controller;
                     }
                 }
 
                 if ($save) {
-                    $cache->save('router_data', $router, $config->get('router')->cacheTtl);
+                    $cache->save('router_resources', $resources, $config->get('router')->cacheTtl);
                 }
+            }
+
+            foreach ($resources as $module => $controller) {
+                $router->addModuleResource($module, $controller);
             }
 
             return $router;
