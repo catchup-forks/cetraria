@@ -12,11 +12,16 @@ return [
         'baseUri' => getenv('BASE_URI'),
         'debug'   => true,
     ],
+    'volt' => [
+        'compiledExt'  => '.php',
+        'separator'    => '_',
+        'cacheDir'     => getenv('BASE_DIR') . 'var/cache/volt/',
+        'forceCompile' => true,
+    ],
     'modules' => [
         'user' => true,
     ],
     'logger' => [
-        'enabled' => true,
         'path'    => getenv('BASE_DIR') . 'var/logs/',
         'format'  => $logFormat[0],
         'date'    => $logFormat[1]
