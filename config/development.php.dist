@@ -23,8 +23,8 @@ $logFormat = ["%date% $host php: [%type%] %message%", 'D j H:i:s'];
 
 return [
     'application' => [
-        'appName'       => 'Cetraria',
-        'appVersion'    => '0.0.1',
+        'appName'       => getenv('APP_NAME'),
+        'appVersion'    => getenv('APP_VERSION'),
         'baseDir'       => getenv('BASE_DIR'),
         'migrationsDir' => getenv('BASE_DIR') . 'app/migrations/',
         'baseUri'       => getenv('BASE_URI'),
