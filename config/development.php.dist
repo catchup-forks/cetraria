@@ -57,7 +57,7 @@ return [
     'cache' => [
         'adapter'  => 'File',
         'lifetime' => 1 * 60 * 60,
-        'prefix'   => 'dara',
+        'prefix'   => 'data_',
         'cacheDir' => getenv('BASE_DIR') . 'var/cache/data/'
     ],
     'database' => [

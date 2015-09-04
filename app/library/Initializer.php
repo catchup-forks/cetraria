@@ -21,14 +21,16 @@ use Phalcon\Config;
 use Phalcon\Loader;
 use Phalcon\Mvc\Router;
 use Phalcon\DiInterface;
-use Phalcon\Events\Manager         as EventsManager;
-use Phalcon\Logger\Adapter\File    as FileLogger;
-use Phalcon\Logger\Formatter\Line  as FormatterLine;
-use Phalcon\Error\Handler          as ErrorHandler;
-use Phalcon\Cache\Frontend\Output  as FrontOutput;
-use Phalcon\Cache\Frontend\Data    as FrontData;
-use Phalcon\Mvc\Model\Manager      as ModelsManager;
-use Phalcon\Mvc\Router\Annotations as AnnotationsRouter;
+use Phalcon\Mvc\Dispatcher;
+use Phalcon\Events\Manager            as EventsManager;
+use Phalcon\Logger\Adapter\File       as FileLogger;
+use Phalcon\Logger\Formatter\Line     as FormatterLine;
+use Phalcon\Error\Handler             as ErrorHandler;
+use Phalcon\Cache\Frontend\Output     as FrontOutput;
+use Phalcon\Cache\Frontend\Data       as FrontData;
+use Phalcon\Mvc\Model\Manager         as ModelsManager;
+use Phalcon\Mvc\Router\Annotations    as AnnotationsRouter;
+use Cetraria\Library\Listeners\Action as ActionListener;
 
 /**
  * Application Initializer
@@ -43,6 +45,7 @@ trait Initializer
             'annotations',
             'database',
             'router',
+            'dispatcher',
         ],
         'cli'    => [],
         'rest'   => [],
@@ -308,9 +311,7 @@ trait Initializer
     protected function initRouter(DiInterface $di, Config $config, EventsManager $em)
     {
         $di->setShared('router', function () use ($di, $config, $em) {
-            $cache     = $di->get('dataCache');
-            $resources = $cache->get('router_resources');
-
+            $cache  = $di->get('dataCache');
             $router = new AnnotationsRouter(false);
 
             $moduleName = Application::DEFAULT_MODULE;
@@ -328,12 +329,14 @@ trait Initializer
             $router->removeExtraSlashes(true);
             $router->setEventsManager($em);
 
-            if (ENV_DEVELOPMENT === APPLICATION_ENV || !$resources) {
+            $resources = $cache->get('router_resources');
+            if (!$resources || ENV_DEVELOPMENT === APPLICATION_ENV) {
                 $save = !$resources;
 
                 foreach ($allModules as $module) {
                     $moduleName = ucfirst($module);
-                    $dir = new \DirectoryIterator($di->get('registry')->directories->modules . $moduleName);
+                    $modulesDir = $di->get('registry')->directories->modules;
+                    $dir = new \DirectoryIterator($modulesDir . $moduleName . '/Controllers');
 
                     foreach ($dir as $fileInfo) {
                         if ($fileInfo->isDot() || false === strpos($fileInfo->getBasename(), 'Controller.php')) {
@@ -355,6 +358,34 @@ trait Initializer
             }
 
             return $router;
+        });
+    }
+
+    /**
+     * Initialize the Dispatcher.
+     *
+     * @param DiInterface   $di     Dependency Injector
+     * @param Config        $config App config
+     * @param EventsManager $em     Events Manager
+     *
+     * @return void
+     */
+    protected function initDispatcher(DiInterface $di, Config $config, EventsManager $em)
+    {
+        $di->setShared('dispatcher', function () use ($di, $config, $em) {
+            $dispatcher = new Dispatcher;
+
+            if ($config->get('application')->debug) {
+                $em->attach('dispatch', new ActionListener($di, $em));
+            }
+
+            $moduleName = Application::DEFAULT_MODULE;
+            $namespace  = 'Cetraria\Modules\\' . ucfirst($moduleName) . '\Controllers';
+
+            $dispatcher->setDefaultNamespace($namespace);
+            $dispatcher->setEventsManager($em);
+
+            return $dispatcher;
         });
     }
 }
