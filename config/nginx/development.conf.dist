@@ -1,24 +1,24 @@
 server {
-  server_name www.klay.dev;
-  return 301 $scheme://klay.dev$request_uri;
+  server_name www.cetraria.local;
+  return 301 $scheme://cetraria.local$request_uri;
 }
 
 server {
   listen 80;
 
-  server_name klay.dev;
+  server_name cetraria.local;
   server_tokens on;
 
   client_max_body_size 128M;
   charset              utf-8;
 
-  set $root_path "/srv/http/klay.me/public";
+  set $root_path "/srv/http/cetraria.local/public";
   set $bootstrap "index.php";
 
   rewrite_log on;
 
-  error_log  /srv/http/klay.me/var/logs/nginx.main.error.log;
-  access_log /srv/http/klay.me/var/logs/nginx.main.access.log main buffer=50k;
+  error_log  /srv/http/cetraria.local/var/logs/nginx.main.error.log;
+  access_log /srv/http/cetraria.local/var/logs/nginx.main.access.log main buffer=50k;
 
   index $bootstrap;
   root $root_path;
