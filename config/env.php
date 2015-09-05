@@ -92,3 +92,13 @@ if (ENV_PRODUCTION === APPLICATION_ENV) {
 if (ENV_DEVELOPMENT === APPLICATION_ENV && extension_loaded('xdebug')) {
     ini_set('xdebug.collect_params', 4);
 }
+
+if (7 <= PHP_MAJOR_VERSION) {
+    if (ENV_PRODUCTION === APPLICATION_ENV) {
+        // assertion code will not be generated, making the assertions zero-cost
+        ini_set('zend.assertions', -1);
+    } elseif (ENV_DEVELOPMENT === APPLICATION_ENV) {
+        // assertion code will be generated and executed
+        ini_set('zend.assertions', 1);
+    }
+}
