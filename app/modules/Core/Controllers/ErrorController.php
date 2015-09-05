@@ -27,9 +27,10 @@ class ErrorController extends Controller
 {
     public function indexAction()
     {
+        /** @var \Phalcon\Error\Error $error */
         $error = $this->dispatcher->getParam('error');
 
-        switch ($error->code()) {
+        switch ($error->type()) {
             case 404:
                 $code = 404;
                 break;
