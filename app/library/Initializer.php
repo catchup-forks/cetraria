@@ -344,7 +344,7 @@ trait Initializer
                         }
 
                         $controller = $namespace . '\\' .$fileInfo->getBasename('Controller.php');
-                        $resources[strtolower($module)] = $controller;
+                        $resources[strtolower($module)][] = $controller;
                     }
                 }
 
@@ -353,8 +353,10 @@ trait Initializer
                 }
             }
 
-            foreach ($resources as $module => $controller) {
-                $router->addModuleResource($module, $controller);
+            foreach ($resources as $module => $controllers) {
+                array_map(function ($controller) use ($module, $router) {
+                    $router->addModuleResource($module, $controller);
+                }, $controllers);
             }
 
             return $router;
