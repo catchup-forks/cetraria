@@ -324,14 +324,14 @@ trait Initializer
 
             $router->setDefaultModule($moduleName);
             $router->setDefaultNamespace($namespace);
-            $router->setDefaultController('Index');
+            $router->setDefaultController('index');
             $router->setDefaultAction('index');
             $router->removeExtraSlashes(true);
             $router->setEventsManager($em);
 
             $resources = $cache->get('router_resources');
-            if (!$resources || ENV_DEVELOPMENT === APPLICATION_ENV) {
-                $save = !$resources;
+            if ((!is_array($resources) || empty($resources)) || ENV_DEVELOPMENT === APPLICATION_ENV) {
+                $save = (!is_array($resources) || empty($resources)) && ENV_PRODUCTION === APPLICATION_ENV;
 
                 foreach ($allModules as $module) {
                     $moduleName = ucfirst($module);
@@ -358,6 +358,8 @@ trait Initializer
                     $router->addModuleResource($module, $controller);
                 }, $controllers);
             }
+
+            $router->notFound(['controller' => 'error', 'action' => 'route404']);
 
             return $router;
         });
