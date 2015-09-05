@@ -27,6 +27,8 @@ class ErrorController extends Controller
 {
     public function indexAction()
     {
+        $this->tag->setTitle('Unexpected error');
+
         /** @var \Phalcon\Error\Error $error */
         $error = $this->dispatcher->getParam('error');
 
@@ -44,12 +46,19 @@ class ErrorController extends Controller
                 $code = 500;
         }
 
-        $this->getDi()->getShared('response')->resetHeaders()->setStatusCode($code, null);
+        $this->response->resetHeaders()->setStatusCode($code, null);
 
         $this->view->setVars([
             'code'  => $code,
             'error' => $error,
             'debug' => ENV_DEVELOPMENT === APPLICATION_ENV
         ]);
+    }
+
+    public function route404Action()
+    {
+        $this->tag->setTitle('Not Found');
+        $this->response->resetHeaders()->setStatusCode(404, 'Not Found');
+        $this->view->pick('error/404');
     }
 }
