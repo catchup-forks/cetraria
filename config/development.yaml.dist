@@ -1,0 +1,69 @@
+#
+# Cetraria
+#
+# Copyright (c) 2015 Serghei Iakovlev
+#
+# This source file is subject to the New BSD License that is bundled
+# with this package in the file docs/LICENSE.txt.
+#
+# If you did not receive a copy of the license and are unable to
+# obtain it through the world-wide-web, please send an email
+# to me@klay.me so I can send you a copy immediately.
+#
+
+application:
+  appName: Cetraria
+  appVersion: 0.0.1
+  migrationsDir: !approot app/migrations/
+  baseUri: /
+  debug: false
+
+volt:
+  compiledExt: .php
+  separator: _
+  cacheDir: !approot var/cache/volt/
+  forceCompile: true
+
+modules:
+  user: true
+
+logger:
+  path: !approot var/logs/
+  format: !host "%date% $host php: [%type%] %message%"
+  date: D j H:i:s
+
+error:
+  logger: !approot/appenv var/logs/$appenv.error.log
+  formatter:
+    format: !host "%date% $host php: [%type%] %message%"
+    date: D j H:i:s
+  controller: error
+  action: index
+
+annotations:
+  adapter: Files
+  annotationsDir: !approot var/cache/annotations/
+
+cache:
+  adapter: File
+  lifetime: !multiply 1 * 60 * 60
+  prefix: data_
+  cacheDir: !approot var/cache/data/
+
+database:
+  adapter: Postgresql
+  host: localhost
+  username: cetraria
+  password: ********
+  dbname: cetraria
+  port: 5432
+  schema: public
+
+metadata:
+  adapter: Files
+  metaDataDir: !approot var/cache/metadata/
+
+router:
+  cacheTtl: !multiply 24 * 60 * 60
+
+

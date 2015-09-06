@@ -10,8 +10,8 @@ vendor/
 .env
 
 # App config
-/config/development.php
-/config/production.php
+/config/development.yaml
+/config/production.yaml
 
 # Nginx config
 /config/nginx/development.conf

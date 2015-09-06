@@ -1,5 +1,20 @@
 <?php
 
+/*
+ +------------------------------------------------------------------------+
+ | Cetraria                                                               |
+ +------------------------------------------------------------------------+
+ | Copyright (c) 2015 Serghei Iakovlev                                    |
+ +------------------------------------------------------------------------+
+ | This source file is subject to the New BSD License that is bundled     |
+ | with this package in the file docs/LICENSE.txt.                        |
+ |                                                                        |
+ | If you did not receive a copy of the license and are unable to         |
+ | obtain it through the world-wide-web, please send an email             |
+ | to me@klay.me so I can send you a copy immediately.                    |
+ +------------------------------------------------------------------------+
+*/
+
 namespace Cetraria\Library;
 
 use Phalcon\Mvc\Application as PhApplication;
@@ -8,6 +23,11 @@ use Phalcon\DiInterface;
 use Phalcon\Config;
 use Phalcon\Registry;
 
+/**
+ * Application class
+ *
+ * @package Cetraria\Library
+ */
 class Application extends PhApplication
 {
     use Initializer;
@@ -34,7 +54,8 @@ class Application extends PhApplication
     {
         $di = $di ?: new FactoryDefault;
 
-        $this->config = new Config(require_once BASE_DIR . 'config' . DS . APPLICATION_ENV . '.php');
+        $this->config = $this->parseConfig();
+
         $modules = array_filter($this->config->modules->toArray());
 
         // Setup Registry

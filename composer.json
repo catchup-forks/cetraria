@@ -2,6 +2,7 @@
   "name": "sergeyklay/cetraria",
   "require": {
     "php": "~5.5",
+    "ext-yaml": "*",
     "phalcon/incubator": "2.0.*@dev",
     "vlucas/phpdotenv": "~2.0"
   }

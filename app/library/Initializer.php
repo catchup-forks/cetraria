@@ -22,6 +22,7 @@ use Phalcon\Loader;
 use Phalcon\Mvc\Router;
 use Phalcon\DiInterface;
 use Phalcon\Mvc\Dispatcher;
+use Phalcon\Config\Adapter\ExtendedYaml;
 use Phalcon\Events\Manager            as EventsManager;
 use Phalcon\Logger\Adapter\File       as FileLogger;
 use Phalcon\Logger\Formatter\Line     as FormatterLine;
@@ -391,5 +392,31 @@ trait Initializer
 
             return $dispatcher;
         });
+    }
+
+    /**
+     * Prepare and parse config
+     *
+     * @return ExtendedYaml
+     */
+    protected function parseConfig()
+    {
+        return new ExtendedYaml(BASE_DIR . 'config/' . APPLICATION_ENV . '.yaml', [
+            '!host' => function($value) {
+                $host = explode('.', gethostname())[0];
+                return str_replace('$host', $host, $value);
+            },
+            '!approot' => function($value) {
+                return BASE_DIR . $value;
+            },
+            '!multiply' => function($value) {
+                $values = explode('*', $value);
+                return array_product($values);
+            },
+            '!approot/appenv' => function($value) {
+                $value = str_replace('$appenv', APPLICATION_ENV, $value);
+                return BASE_DIR . $value;
+            },
+        ]);
     }
 }
