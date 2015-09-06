@@ -22,7 +22,7 @@ use Phalcon\Loader;
 use Phalcon\Mvc\Router;
 use Phalcon\DiInterface;
 use Phalcon\Mvc\Dispatcher;
-use Phalcon\Config\Adapter\ExtendedYaml;
+use Phalcon\Config\Adapter\Yaml;
 use Phalcon\Events\Manager            as EventsManager;
 use Phalcon\Logger\Adapter\File       as FileLogger;
 use Phalcon\Logger\Formatter\Line     as FormatterLine;
@@ -397,11 +397,11 @@ trait Initializer
     /**
      * Prepare and parse config
      *
-     * @return ExtendedYaml
+     * @return Yaml
      */
     protected function parseConfig()
     {
-        return new ExtendedYaml(BASE_DIR . 'config/' . APPLICATION_ENV . '.yaml', [
+        return new Yaml(BASE_DIR . 'config/' . APPLICATION_ENV . '.yaml', [
             '!host' => function($value) {
                 $host = explode('.', gethostname())[0];
                 return str_replace('$host', $host, $value);
