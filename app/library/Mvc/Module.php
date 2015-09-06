@@ -24,6 +24,7 @@ use Phalcon\Mvc\View\Engine\Volt;
 use Phalcon\Mvc\ModuleDefinitionInterface;
 use Phalcon\Exception;
 use Phalcon\Mvc\View\Exception as ViewException;
+use Phalcon\Tag;
 
 abstract class Module implements ModuleDefinitionInterface
 {
@@ -85,16 +86,29 @@ abstract class Module implements ModuleDefinitionInterface
             $view->registerEngines([
                 '.volt'  => function ($view, $di) use ($config) {
                     $volt   = new Volt($view, $di);
-                    $config = $config->get('volt')->toArray();
+                    $voltConfig = $config->get('volt')->toArray();
 
                     $options = [
-                        'compiledPath'      => $config['cacheDir'],
-                        'compiledExtension' => $config['compiledExt'],
-                        'compiledSeparator' => $config['separator'],
-                        'compileAlways'     => ENV_DEVELOPMENT === APPLICATION_ENV && $config['forceCompile'],
+                        'compiledPath'      => $voltConfig['cacheDir'],
+                        'compiledExtension' => $voltConfig['compiledExt'],
+                        'compiledSeparator' => $voltConfig['separator'],
+                        'compileAlways'     => ENV_DEVELOPMENT === APPLICATION_ENV && $voltConfig['forceCompile'],
                     ];
 
                     $volt->setOptions($options);
+
+                    $volt->getCompiler()
+                        ->addFunction('full_title', function () use ($config) {
+                            $title = Tag::getTitle(false);
+                            $appName = $config->get('application')->appName;
+
+                            if (empty(trim($title))) {
+                                return "'<title>$appName</title>'";
+                            }
+
+                            $titleSeparator = $config->get('application')->titleSeparator;
+                            return "'<title>$appName $titleSeparator $title</title>'";
+                        });
 
                     return $volt;
                 },

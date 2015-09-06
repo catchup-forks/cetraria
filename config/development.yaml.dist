@@ -16,7 +16,8 @@ application:
   appVersion: 0.0.1
   migrationsDir: !approot app/migrations/
   baseUri: /
-  debug: false
+  debug: true
+  titleSeparator: "::"
 
 volt:
   compiledExt: .php
