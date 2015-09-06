@@ -139,7 +139,7 @@ trait Initializer
                 $moduleName              = 'Cetraria\Modules\\' . ucfirst($module);
                 $modules[$module]        = [
                     'className' => $moduleName . '\Module',
-                    'path'      => $registry->directories->modules . ucfirst($module) . DS . 'Module.php',
+                    'path'      => $registry->directories->modules . ucfirst($module) . '/Module.php',
                 ];
             }
         }

@@ -40,22 +40,12 @@ define('APP_START_TIME', microtime(true));
 /**
  * @const APP_START_MEMORY The memory usage at the start of the application, used for profiling
  */
-define('APP_START_MEMORY', memory_get_usage(defined('HHVM_VERSION')));
-
-/**
- * @const DS Shortcut for DIRECTORY_SEPARATOR
- */
-define('DS', DIRECTORY_SEPARATOR);
+define('APP_START_MEMORY', memory_get_usage());
 
 /**
  * @const NAMESPACE_SEPARATOR Namespace Separator
  */
 define('NAMESPACE_SEPARATOR', '\\');
-
-/**
- * @const NS Shortcut for NAMESPACE_SEPARATOR
- */
-define('NS', NAMESPACE_SEPARATOR);
 
 /**
  * @const BASE_DIR Document root
