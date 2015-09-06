@@ -4,6 +4,7 @@
     "php": "~5.5",
     "ext-yaml": "*",
     "phalcon/incubator": "2.0.*@dev",
+    "phalcon/devtools": "dev-master",
     "vlucas/phpdotenv": "~2.0"
   }
 }
