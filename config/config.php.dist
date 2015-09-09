@@ -1,0 +1,77 @@
+<?php
+
+/*
+ +------------------------------------------------------------------------+
+ | Cetraria                                                               |
+ +------------------------------------------------------------------------+
+ | Copyright (c) 2015 Serghei Iakovlev                                    |
+ +------------------------------------------------------------------------+
+ | This source file is subject to the New BSD License that is bundled     |
+ | with this package in the file docs/LICENSE.txt.                        |
+ |                                                                        |
+ | If you did not receive a copy of the license and are unable to         |
+ | obtain it through the world-wide-web, please send an email             |
+ | to me@klay.me so I can send you a copy immediately.                    |
+ +------------------------------------------------------------------------+
+*/
+
+return [
+    'application' => [
+        'appName'        => 'Cetraria',
+        'version'        => '0.0.1',
+        'migrationsDir'  => getenv('BASE_DIR') . 'app/migrations/',
+        'baseUri'        => '/',
+        'debug'          => true,
+        'titleSeparator' => '::',
+    ],
+    'volt' => [
+        'compiledExt'  => '.php',
+        'separator'    => '_',
+        'cacheDir'     => getenv('BASE_DIR') . 'var/cache/volt/',
+        'forceCompile' => true,
+    ],
+    'modules' => [
+        'user' => true,
+    ],
+    'logger' => [
+        'path'   => getenv('BASE_DIR') . 'var/logs/',
+        'format' => '%date% ' . getenv('HOSTNAME') . ' php: [%type%] %message%',
+        'date'   => 'D j H:i:s',
+    ],
+    'error' => [
+        'logger'    => 'var/logs/error.log',
+        'formatter' => [
+            'format' => '%date% ' . getenv('HOSTNAME') . ' php: [%type%] %message%',
+            'date'   => 'D j H:i:s',
+        ],
+        'controller' => 'error',
+        'action'     => 'index'
+    ],
+    'annotations' => [
+        'adapter' => 'Files',
+        'annotationsDir' => getenv('BASE_DIR') . 'var/cache/annotations/',
+    ],
+    'cache' => [
+        'adapter' => 'File',
+        'lifetime' => 1 * 60 * 60,
+        'prefix'   => 'data_',
+        'cacheDir' => getenv('BASE_DIR') . 'var/cache/data/'
+    ],
+    'database' => [
+        'adapter'  => 'Postgresql',
+        'host'     => 'localhost',
+        'username' => 'cetraria',
+        'password' => '********',
+        'dbname'   => 'cetraria',
+        'port'     => 5432,
+        'schema'   => 'public'
+    ],
+    'metadata' => [
+        'adapter'     => 'Files',
+        'metaDataDir' => getenv('BASE_DIR') . 'var/cache/metadata/',
+    ],
+    'router' => [
+        'cacheKey' => 'router_resources',
+        'cacheTtl' => 24 * 60 * 60
+    ],
+];

@@ -48,14 +48,14 @@ define('APP_START_MEMORY', memory_get_usage());
 define('NAMESPACE_SEPARATOR', '\\');
 
 /**
- * @const BASE_DIR Document root
+ * @const DEV_IP Developer IP mask
  */
-define('BASE_DIR', getenv('BASE_DIR'));
+define('DEV_IP', getenv('DEV_IP'));
 
 /**
  * @const DEV_IP Developer IP mask
  */
-define('DEV_IP', getenv('DEV_IP'));
+define('HOSTNAME', explode('.', gethostname())[0]);
 
 // Set the default locale
 setlocale(LC_ALL, getenv('LOCALE'));
