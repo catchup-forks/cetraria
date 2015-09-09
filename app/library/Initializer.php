@@ -22,7 +22,6 @@ use Phalcon\Loader;
 use Phalcon\Mvc\Router;
 use Phalcon\DiInterface;
 use Phalcon\Mvc\Dispatcher;
-use Phalcon\Config\Adapter\Yaml;
 use Phalcon\Events\Manager            as EventsManager;
 use Phalcon\Logger\Adapter\File       as FileLogger;
 use Phalcon\Logger\Formatter\Line     as FormatterLine;
@@ -312,6 +311,7 @@ trait Initializer
     protected function initRouter(DiInterface $di, Config $config, EventsManager $em)
     {
         $di->setShared('router', function () use ($di, $config, $em) {
+            $routerConfig = $config->get('router');
             $cache  = $di->get('dataCache');
             $router = new AnnotationsRouter(false);
 
@@ -330,7 +330,7 @@ trait Initializer
             $router->removeExtraSlashes(true);
             $router->setEventsManager($em);
 
-            $resources = $cache->get('router_resources');
+            $resources = $cache->get($routerConfig->get('cacheKey'));
             if ((!is_array($resources) || empty($resources)) || ENV_DEVELOPMENT === APPLICATION_ENV) {
                 $save = (!is_array($resources) || empty($resources)) && ENV_PRODUCTION === APPLICATION_ENV;
 
@@ -350,7 +350,7 @@ trait Initializer
                 }
 
                 if ($save) {
-                    $cache->save('router_resources', $resources, $config->get('router')->cacheTtl);
+                    $cache->save($routerConfig->get('cacheKey'), $resources, $routerConfig->get('cacheTtl'));
                 }
             }
 
@@ -395,28 +395,35 @@ trait Initializer
     }
 
     /**
-     * Prepare and parse config
+     * Prepare and return config
      *
-     * @return Yaml
+     * @return Config
+     * @throws \RuntimeException
      */
-    protected function parseConfig()
+    protected function initConfig()
     {
-        return new Yaml(BASE_DIR . 'config/' . APPLICATION_ENV . '.yaml', [
-            '!host' => function($value) {
-                $host = explode('.', gethostname())[0];
-                return str_replace('$host', $host, $value);
-            },
-            '!approot' => function($value) {
-                return BASE_DIR . $value;
-            },
-            '!multiply' => function($value) {
-                $values = explode('*', $value);
-                return array_product($values);
-            },
-            '!approot/appenv' => function($value) {
-                $value = str_replace('$appenv', APPLICATION_ENV, $value);
-                return BASE_DIR . $value;
-            },
-        ]);
+        if (!is_readable(getenv('BASE_DIR') . 'config/config.php')) {
+            throw new \RuntimeException(
+                'Unable to read config from ' . getenv('BASE_DIR') . 'config/config.php'
+            );
+        }
+
+        $config = include_once getenv('BASE_DIR') . 'config/config.php';
+
+        if (is_array($config)) {
+            $config = new Config($config);
+        }
+
+        if (is_readable(getenv('BASE_DIR') . 'config/development.php')) {
+            $development = include_once getenv('BASE_DIR') . 'config/development.php';
+
+            if (is_array($development)) {
+                $development = new Config($development);
+            }
+
+            $config->merge($development);
+        }
+
+        return $config;
     }
 }

@@ -54,7 +54,7 @@ class Application extends PhApplication
     {
         $di = $di ?: new FactoryDefault;
 
-        $this->config = $this->parseConfig();
+        $this->config = $this->initConfig();
 
         $modules = array_filter($this->config->modules->toArray());
 
@@ -63,9 +63,9 @@ class Application extends PhApplication
         $registry->modules = array_merge([self::DEFAULT_MODULE], array_keys($modules));
 
         $registry->directories = (object)[
-            'modules' => BASE_DIR . 'app/modules/',
-            'plugins' => BASE_DIR . 'app/plugins/',
-            'library' => BASE_DIR . 'app/library/'
+            'modules' => getenv('BASE_DIR') . 'app/modules/',
+            'plugins' => getenv('BASE_DIR') . 'app/plugins/',
+            'library' => getenv('BASE_DIR') . 'app/library/'
         ];
 
         $di->setShared('registry', $registry);
