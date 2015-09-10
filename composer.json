@@ -6,5 +6,8 @@
     "phalcon/incubator": "2.0.*@dev",
     "phalcon/devtools": "2.0.*@dev",
     "vlucas/phpdotenv": "~2.0"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "*"
   }
 }
