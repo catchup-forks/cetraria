@@ -22,6 +22,7 @@ use Phalcon\Loader;
 use Phalcon\Mvc\Router;
 use Phalcon\DiInterface;
 use Phalcon\Mvc\Dispatcher;
+use Phalcon\Security\Random;
 use Phalcon\Events\Manager            as EventsManager;
 use Phalcon\Logger\Adapter\File       as FileLogger;
 use Phalcon\Logger\Formatter\Line     as FormatterLine;
@@ -46,6 +47,7 @@ trait Initializer
             'database',
             'router',
             'dispatcher',
+            'secureToken'
         ],
         'cli'    => [],
         'rest'   => [],
@@ -392,6 +394,29 @@ trait Initializer
 
             return $dispatcher;
         });
+    }
+
+    /**
+     * Using true secure token without needs of commit it or store somewhere
+     *
+     * @param DiInterface   $di     Dependency Injector
+     * @param Config        $config App config
+     * @param EventsManager $em     Events Manager
+     *
+     * @return void
+     */
+    protected function initSecureToken(DiInterface $di, Config $config, EventsManager $em)
+    {
+        $tokenFile = getenv('BASE_DIR') . '.secret';
+
+        if (is_readable($tokenFile)) {
+            $line = (new \SplFileObject($tokenFile))->fgets();
+        } else {
+            $line = (new Random)->hex(64);
+            (new \SplFileObject($tokenFile, 'w'))->fwrite($line);
+        }
+
+        $config->get('application')->offsetSet('token', $line);
     }
 
     /**
