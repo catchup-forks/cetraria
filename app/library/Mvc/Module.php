@@ -21,15 +21,14 @@ use Cetraria\Library\DiInjector;
 use Phalcon\Mvc\View;
 use Phalcon\DiInterface;
 use Phalcon\Mvc\View\Engine\Volt;
-use Phalcon\Mvc\ModuleDefinitionInterface;
 use Phalcon\Exception;
 use Phalcon\Mvc\View\Exception as ViewException;
 use Phalcon\Tag;
 
-abstract class Module implements ModuleDefinitionInterface
+abstract class Module implements ModuleInterface
 {
     use DiInjector {
-        DiInjector::__construct as injectDi;
+        DiInjector::__construct as protected injectDi;
     }
 
     /**
@@ -160,7 +159,7 @@ abstract class Module implements ModuleDefinitionInterface
     /**
      * Get module name
      *
-     * @return null|string
+     * @return string
      * @throws \Phalcon\Exception
      */
     public function getModuleName()
