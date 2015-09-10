@@ -40,7 +40,8 @@ abstract class Base extends Injectable
         $this->config = $di->get('config');
 
         $this->logger = $di->get('logger', ['debug']);
-        $this->logger->setFormatter(new FormatterLine(
+        $this->logger->setFormatter(
+            new FormatterLine(
                 $this->config->logger->format,
                 $this->config->logger->date
             )
