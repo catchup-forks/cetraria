@@ -17,6 +17,6 @@ class IndexController extends Controller
      */
     public function indexAction()
     {
-
+        $this->tag->appendTitle('Welcome');
     }
 }

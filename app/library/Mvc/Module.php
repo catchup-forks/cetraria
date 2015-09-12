@@ -77,6 +77,17 @@ abstract class Module implements ModuleInterface
     {
         $viewsDirectory = $this->viewsDirectory;
 
+        $di->setShared('tag', function () use ($di) {
+            $config = $di->get('config');
+
+            $tag = new Tag;
+            $tag->setDocType(Tag::HTML5);
+            $tag->setTitleSeparator($config->get('application')->get('titleSeparator', ' :: '));
+            $tag->setTitle($config->get('application')->get('appName', 'Cetraria'));
+
+            return $tag;
+        });
+
         $di->setShared('view', function () use ($di, $viewsDirectory) {
             $view   = new View;
             $config = $di->get('config');
@@ -95,20 +106,6 @@ abstract class Module implements ModuleInterface
                     ];
 
                     $volt->setOptions($options);
-
-                    $volt->getCompiler()
-                        ->addFunction('full_title', function () use ($config) {
-                            $title = Tag::getTitle(false);
-                            $appName = $config->get('application')->appName;
-
-                            if (empty(trim($title))) {
-                                return "'<title>$appName</title>'";
-                            }
-
-                            $titleSeparator = $config->get('application')->titleSeparator;
-                            return "'<title>$appName $titleSeparator $title</title>'";
-                        });
-
                     return $volt;
                 },
                 '.phtml' => 'Phalcon\Mvc\View\Engine\Php'
