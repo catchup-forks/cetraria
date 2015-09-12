@@ -1,5 +1,5 @@
 {{ get_doctype() }}
-<html lang="en" id="site" dir="ltr">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="utf-8">
     {{ get_title() }}
