@@ -3,6 +3,7 @@
   "require": {
     "php": "~5.5",
     "ext-yaml": "*",
+    "cetraria/meta": "1.0.x-dev",
     "phalcon/incubator": "2.0.*@dev",
     "phalcon/devtools": "2.0.*@dev",
     "vlucas/phpdotenv": "~2.0"
