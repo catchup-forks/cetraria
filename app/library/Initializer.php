@@ -439,14 +439,22 @@ trait Initializer
             $config = new Config($config);
         }
 
-        if (is_readable(getenv('BASE_DIR') . 'config/development.php')) {
-            $development = include_once getenv('BASE_DIR') . 'config/development.php';
+        if ($config instanceof Config) {
+            throw new \RuntimeException(
+                'Unable to read config. Invalid format.'
+            );
+        }
 
-            if (is_array($development)) {
-                $development = new Config($development);
+        if (is_readable(getenv('BASE_DIR') . 'config/'.APPLICATION_ENV.'.php')) {
+            $override = include_once getenv('BASE_DIR') . 'config/'.APPLICATION_ENV.'.php';
+
+            if (is_array($override)) {
+                $override = new Config($override);
             }
 
-            $config->merge($development);
+            if ($override instanceof Config) {
+                $config->merge($override);
+            }
         }
 
         return $config;
