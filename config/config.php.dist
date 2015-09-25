@@ -43,7 +43,7 @@ return [
     ],
     'logger' => [
         'path'   => getenv('BASE_DIR') . 'var/logs/',
-        'format' => '%date% ' . getenv('HOSTNAME') . ' php: [%type%] %message%',
+        'format' => '%date% ' . HOSTNAME . ' php: [%type%] %message%',
         'date'   => 'D j H:i:s',
     ],
     'error' => [
