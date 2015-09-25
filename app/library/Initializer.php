@@ -439,7 +439,7 @@ trait Initializer
             $config = new Config($config);
         }
 
-        if ($config instanceof Config) {
+        if (!$config instanceof Config) {
             throw new \RuntimeException(
                 'Unable to read config. Invalid format.'
             );
