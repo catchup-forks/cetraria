@@ -8,6 +8,7 @@
     "vlucas/phpdotenv": "~2.0"
   },
   "require-dev": {
-    "squizlabs/php_codesniffer": "*"
+    "squizlabs/php_codesniffer": "*",
+    "ovr/phpsa": "*"
   }
 }
