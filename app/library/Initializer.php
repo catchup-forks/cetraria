@@ -72,15 +72,16 @@ trait Initializer
         $di->setShared('app', $this);
 
         $eventsManager = new EventsManager;
+        $config = $di->getShared('config');
 
-        $this->initLogger($di, $this->config, $eventsManager);
-        $this->initLoader($di, $this->config, $eventsManager);
+        $this->initLogger($di, $config, $eventsManager);
+        $this->initLoader($di, $config, $eventsManager);
 
         $this->setEventsManager($eventsManager);
 
         foreach ($this->loaders[$mode] as $service) {
             $serviceName = ucfirst($service);
-            $this->{'init' . $serviceName}($di, $this->config, $eventsManager);
+            $this->{'init' . $serviceName}($di, $config, $eventsManager);
         }
 
         $di->setShared('eventsManager', $eventsManager);

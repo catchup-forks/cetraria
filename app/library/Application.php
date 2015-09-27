@@ -54,24 +54,28 @@ class Application extends PhApplication
     {
         $di = $di ?: new FactoryDefault;
 
-        $this->config = $this->initConfig();
-
-        $modules = array_filter($this->config->modules->toArray());
-
-        // Setup Registry
-        $registry = new Registry;
-        $registry->modules = array_merge([self::DEFAULT_MODULE], array_keys($modules));
-
-        $registry->directories = (object)[
-            'modules' => getenv('BASE_DIR') . 'app/modules/',
-            'plugins' => getenv('BASE_DIR') . 'app/plugins/',
-            'library' => getenv('BASE_DIR') . 'app/library/'
-        ];
-
-        $di->setShared('registry', $registry);
-
         // Store config in the DI container
-        $di->setShared('config', $this->config);
+        $di->setShared('config', $this->initConfig());
+
+        $di->setShared('registry', function () use ($di) {
+            $config = $di->getShared('config');
+
+            // Setup Registry
+            $registry = new Registry;
+            $registry->offsetSet('modules', array_merge(
+                [self::DEFAULT_MODULE],
+                array_keys(array_filter($config->get('modules')->toArray()))
+            ));
+
+            $registry->offsetSet('directories', (object)[
+                'modules' => getenv('BASE_DIR') . 'app/modules/',
+                'plugins' => getenv('BASE_DIR') . 'app/plugins/',
+                'library' => getenv('BASE_DIR') . 'app/library/'
+            ]);
+
+            return $registry;
+
+        });
 
         parent::__construct($di);
     }
