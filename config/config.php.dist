@@ -19,7 +19,7 @@ return [
     'application' => [
         'appName'        => 'Cetraria',
         'version'        => '0.0.1',
-        'migrationsDir'  => getenv('BASE_DIR') . 'app/migrations/',
+        'migrationsDir'  => DOCROOT . 'app/migrations/',
         'baseUri'        => '/',
         'debug'          => true,
         'titleSeparator' => '::',
@@ -35,14 +35,14 @@ return [
     'volt' => [
         'compiledExt'  => '.php',
         'separator'    => '_',
-        'cacheDir'     => getenv('BASE_DIR') . 'var/cache/volt/',
+        'cacheDir'     => DOCROOT . 'var/cache/volt/',
         'forceCompile' => true,
     ],
     'modules' => [
         'user' => true,
     ],
     'logger' => [
-        'path'   => getenv('BASE_DIR') . 'var/logs/',
+        'path'   => DOCROOT . 'var/logs/',
         'format' => '%date% ' . HOSTNAME . ' php: [%type%] %message%',
         'date'   => 'D j H:i:s',
     ],
@@ -57,13 +57,13 @@ return [
     ],
     'annotations' => [
         'adapter' => 'Files',
-        'annotationsDir' => getenv('BASE_DIR') . 'var/cache/annotations/',
+        'annotationsDir' => DOCROOT . 'var/cache/annotations/',
     ],
     'cache' => [
         'adapter' => 'File',
         'lifetime' => 1 * 60 * 60,
         'prefix'   => 'data_',
-        'cacheDir' => getenv('BASE_DIR') . 'var/cache/data/'
+        'cacheDir' => DOCROOT . 'var/cache/data/'
     ],
     'database' => [
         'adapter'  => 'Postgresql',
@@ -76,7 +76,7 @@ return [
     ],
     'metadata' => [
         'adapter'     => 'Files',
-        'metaDataDir' => getenv('BASE_DIR') . 'var/cache/metadata/',
+        'metaDataDir' => DOCROOT . 'var/cache/metadata/',
     ],
     'router' => [
         'cacheKey' => 'router_resources',

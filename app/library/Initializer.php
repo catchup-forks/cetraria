@@ -408,7 +408,7 @@ trait Initializer
      */
     protected function initSecureToken(DiInterface $di, Config $config, EventsManager $em)
     {
-        $tokenFile = getenv('BASE_DIR') . '.secret';
+        $tokenFile = DOCROOT . '.secret';
 
         if (is_readable($tokenFile)) {
             $line = (new \SplFileObject($tokenFile))->fgets();
@@ -428,13 +428,13 @@ trait Initializer
      */
     protected function initConfig()
     {
-        if (!is_readable(getenv('BASE_DIR') . 'config/config.php')) {
+        if (!is_readable(DOCROOT . 'config/config.php')) {
             throw new \RuntimeException(
-                'Unable to read config from ' . getenv('BASE_DIR') . 'config/config.php'
+                'Unable to read config from ' . DOCROOT . 'config/config.php'
             );
         }
 
-        $config = include_once getenv('BASE_DIR') . 'config/config.php';
+        $config = include_once DOCROOT . 'config/config.php';
 
         if (is_array($config)) {
             $config = new Config($config);
@@ -446,8 +446,8 @@ trait Initializer
             );
         }
 
-        if (is_readable(getenv('BASE_DIR') . 'config/'.APPLICATION_ENV.'.php')) {
-            $override = include_once getenv('BASE_DIR') . 'config/'.APPLICATION_ENV.'.php';
+        if (is_readable(DOCROOT . 'config/' . APPLICATION_ENV . '.php')) {
+            $override = include_once DOCROOT . 'config/' . APPLICATION_ENV . '.php';
 
             if (is_array($override)) {
                 $override = new Config($override);

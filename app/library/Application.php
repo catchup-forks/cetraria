@@ -68,9 +68,9 @@ class Application extends PhApplication
             ));
 
             $registry->offsetSet('directories', (object)[
-                'modules' => getenv('BASE_DIR') . 'app/modules/',
-                'plugins' => getenv('BASE_DIR') . 'app/plugins/',
-                'library' => getenv('BASE_DIR') . 'app/library/'
+                'modules' => DOCROOT . 'app/modules/',
+                'plugins' => DOCROOT . 'app/plugins/',
+                'library' => DOCROOT . 'app/library/'
             ]);
 
             return $registry;

@@ -33,6 +33,11 @@ define('ENV_TEST', 'test');
 define('APPLICATION_ENV', getenv('APP_ENV'));
 
 /**
+ * @const DOCROOT Document root
+ */
+define('DOCROOT', rtrim(getenv('BASE_DIR'), '\\/') . DIRECTORY_SEPARATOR);
+
+/**
  * @const APP_START_TIME The start time of the application, used for profiling
  */
 define('APP_START_TIME', microtime(true));
