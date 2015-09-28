@@ -15,24 +15,17 @@
  +------------------------------------------------------------------------+
 */
 
-namespace Cetraria\Modules\Core\Controllers;
+namespace Cetraria\Library\Mvc;
 
-use Cetraria\Library\Mvc\BaseController;
+use Phalcon\Mvc\Controller;
 
 /**
- * Class IndexController
+ * Base Controller
  *
- * @package Cetraria\Modules\Core\Controllers
+ * @package Cetraria\Library\Mvc
  *
- * @RoutePrefix("/", name="home")
+ * @property \Phalcon\Config config
  */
-class IndexController extends BaseController
+class BaseController extends Controller
 {
-    /**
-     * @Route("/", methods={"GET"}, name="home")
-     */
-    public function indexAction()
-    {
-        $this->tag->appendTitle('Welcome');
-    }
 }
