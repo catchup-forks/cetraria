@@ -426,18 +426,22 @@ trait Initializer
     /**
      * Prepare and return config
      *
+     * @param  string $path Config path [Optional]
      * @return Config
+     *
      * @throws \RuntimeException
      */
-    protected function initConfig()
+    protected function initConfig($path = null)
     {
-        if (!is_readable(DOCROOT . 'config/config.php')) {
+        $path = $path ?: DOCROOT . 'config' . DIRECTORY_SEPARATOR;
+
+        if (!is_readable($path . 'config.php')) {
             throw new \RuntimeException(
-                'Unable to read config from ' . DOCROOT . 'config/config.php'
+                'Unable to read config from ' . $path . 'config.php'
             );
         }
 
-        $config = include_once DOCROOT . 'config/config.php';
+        $config = include_once $path . 'config.php';
 
         if (is_array($config)) {
             $config = new Config($config);
@@ -445,12 +449,12 @@ trait Initializer
 
         if (!$config instanceof Config) {
             throw new \RuntimeException(
-                'Unable to read config. Invalid format.'
+                'Unable to read config. Config must be either an array or \Phalcon\Config instance.'
             );
         }
 
-        if (is_readable(DOCROOT . 'config/' . APPLICATION_ENV . '.php')) {
-            $override = include_once DOCROOT . 'config/' . APPLICATION_ENV . '.php';
+        if (is_readable($path . APPLICATION_ENV . '.php')) {
+            $override = include_once $path . APPLICATION_ENV . '.php';
 
             if (is_array($override)) {
                 $override = new Config($override);
