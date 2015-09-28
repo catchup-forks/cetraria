@@ -24,6 +24,7 @@ use Phalcon\Mvc\View\Engine\Volt;
 use Phalcon\Exception;
 use Phalcon\Mvc\View\Exception as ViewException;
 use Phalcon\Tag;
+use Phalcon\Config;
 
 abstract class Module implements ModuleInterface
 {
@@ -50,6 +51,12 @@ abstract class Module implements ModuleInterface
     protected $moduleDirectory = null;
 
     /**
+     * Module config directory
+     * @var string|null
+     */
+    protected $configDirectory = null;
+
+    /**
      * Module Constructor
      *
      * @throws \Phalcon\Exception
@@ -61,9 +68,10 @@ abstract class Module implements ModuleInterface
         $this->moduleDirectory = $this->getDI()
                 ->get('registry')
                 ->directories
-                ->modules . ucfirst($this->getModuleName()) . '/';
+                ->modules . ucfirst($this->getModuleName()) . DIRECTORY_SEPARATOR;
 
-        $this->viewsDirectory = $this->getModuleDirectory() . 'Views/';
+        $this->viewsDirectory  = $this->getModuleDirectory() . 'Views' . DIRECTORY_SEPARATOR;
+        $this->configDirectory = $this->getModuleDirectory() . 'Config' . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -76,6 +84,8 @@ abstract class Module implements ModuleInterface
     public function registerServices(DiInterface $di)
     {
         $viewsDirectory = $this->viewsDirectory;
+
+        $this->loadConfig();
 
         $di->setShared('tag', function () use ($di) {
             $config = $di->get('config');
@@ -167,5 +177,37 @@ abstract class Module implements ModuleInterface
         }
 
         return $this->moduleName;
+    }
+
+    /**
+     * Loads and merges module-specific config
+     */
+    protected function loadConfig()
+    {
+        $config = $this->getDI()->getShared('config');
+
+        if (is_readable($this->configDirectory . 'config.php')) {
+            $moduleConfig = include_once $this->configDirectory . 'config.php';
+
+            if (is_array($moduleConfig)) {
+                $moduleConfig = new Config($moduleConfig);
+            }
+
+            if ($moduleConfig instanceof Config) {
+                $config->merge($moduleConfig);
+            }
+        }
+
+        if (is_readable($this->configDirectory . APPLICATION_ENV . '.php')) {
+            $override = include_once $this->configDirectory . APPLICATION_ENV . '.php';
+
+            if (is_array($override)) {
+                $override = new Config($override);
+            }
+
+            if ($override instanceof Config) {
+                $config->merge($override);
+            }
+        }
     }
 }
