@@ -34,17 +34,6 @@ class Application extends PhApplication
 
     const DEFAULT_MODULE = 'core';
 
-    const ENV_PRODUCTION  = ENV_PRODUCTION;
-    const ENV_STAGING     = ENV_STAGING;
-    const ENV_TEST        = ENV_TEST;
-    const ENV_DEVELOPMENT = ENV_DEVELOPMENT;
-
-    /**
-     * Application config
-     * @var Config
-     */
-    protected $config = null;
-
     /**
      * Application constructor
      *
