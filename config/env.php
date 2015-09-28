@@ -4,7 +4,7 @@
 include __DIR__ . '/../vendor/autoload.php';
 
 // Load environment variables
-$dotenv = new Dotenv\Dotenv(realpath(__DIR__ . '/../'));
+$dotenv = new Dotenv\Dotenv(realpath(dirname(__DIR__)));
 $dotenv->load();
 
 /**
