@@ -339,16 +339,19 @@ trait Initializer
 
                 foreach ($allModules as $module) {
                     $moduleName = ucfirst($module);
-                    $modulesDir = $di->get('registry')->directories->modules;
-                    $dir = new \DirectoryIterator($modulesDir . $moduleName . '/Controllers');
+                    $controllerDir = $di->get('registry')->directories->modules . $moduleName . '/Controllers';
 
-                    foreach ($dir as $fileInfo) {
-                        if ($fileInfo->isDot() || false === strpos($fileInfo->getBasename(), 'Controller.php')) {
-                            continue;
+                    if (is_readable($controllerDir) && is_dir($controllerDir)) {
+                        $dir = new \DirectoryIterator($controllerDir);
+
+                        foreach ($dir as $fileInfo) {
+                            if ($fileInfo->isDot() || false === strpos($fileInfo->getBasename(), 'Controller.php')) {
+                                continue;
+                            }
+
+                            $controller = $namespace . '\\' .$fileInfo->getBasename('Controller.php');
+                            $resources[strtolower($module)][] = $controller;
                         }
-
-                        $controller = $namespace . '\\' .$fileInfo->getBasename('Controller.php');
-                        $resources[strtolower($module)][] = $controller;
                     }
                 }
 
