@@ -1,4 +1,4 @@
-upstream backend {
+upstream cetraria {
   server unix:/var/run/php5-fpm.sock;
 }
 
@@ -17,9 +17,6 @@ server {
   client_max_body_size 128M;
   charset              utf-8;
 
-  set $root_path "/srv/http/cetraria.local/public";
-  set $bootstrap "index.php";
-
   rewrite_log on;
 
   # Set the path to the logs do buffering for access log
@@ -27,10 +24,10 @@ server {
   access_log /srv/http/cetraria.local/var/logs/nginx.main.access.log main buffer=50k;
 
   # Entry point
-  index $bootstrap;
+  index index.php;
 
   # Site public root
-  root $root_path;
+  root /srv/http/cetraria.local/public;
 
   # Better website experience for IE users
   add_header X-UA-Compatible "IE=Edge,chrome=1";
@@ -38,7 +35,7 @@ server {
   # Deny showing resource into iframe
   add_header X-Frame-Options DENY;
 
-  # Disable autodetect Conntent-Type for IE users
+  # Disable autodetect Content-Type for IE users
   add_header X-Content-Type-Options nosniff;
 
   # Activates the built-XSS-defense for IE users
@@ -77,12 +74,12 @@ server {
           return 403;
     }
 
-    index $bootstrap;
+    index index.php;
     try_files $uri $uri/ @rewrite;
   }
 
   location @rewrite {
-    rewrite ^/(.*)$ /$bootstrap?_url=/$1 last;
+    rewrite ^/(.*)$ /index.php?_url=/$1 last;
   }
 
   location ~ \.php$ {
@@ -90,7 +87,7 @@ server {
 
     fastcgi_split_path_info ^(.+\.php)(/.+)$;
 
-    fastcgi_pass backend;
+    fastcgi_pass    cetraria;
     fastcgi_param   SCRIPT_FILENAME  $document_root$fastcgi_script_name;
     fastcgi_param   PATH_INFO        $fastcgi_path_info;
     fastcgi_param   PATH_TRANSLATED  $document_root$fastcgi_path_info;
