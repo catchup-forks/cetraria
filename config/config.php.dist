@@ -41,6 +41,7 @@ return [
     ],
     'modules' => [
         'user' => true,
+        'vcs'  => true,
     ],
     'logger' => [
         'path'   => DOCROOT . 'var/logs/',
