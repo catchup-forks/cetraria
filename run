@@ -1,0 +1,14 @@
+#!/usr/local/bin/php
+<?php
+
+use Cetraria\Library\Console;
+
+require realpath(dirname(__FILE__)) . '/config/env.php';
+
+// Include App & Initializer
+require_once DOCROOT . 'app/library/Initializer.php';
+require_once DOCROOT . 'app/library/Console.php';
+
+$application = new Console;
+
+var_dump($application);
