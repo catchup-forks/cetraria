@@ -10,5 +10,7 @@ require_once DOCROOT . 'app/library/Initializer.php';
 require_once DOCROOT . 'app/library/Console.php';
 
 $application = new Console;
+$application->init('cli')->setArgs($argv, $argc);
 
-var_dump($application);
+$application->handle(array('task' => 'Cetraria\Modules\Core\Tasks\Test'));
+$application->handle(array('task' => 'Cetraria\Modules\Vcs\Tasks\Test'));
