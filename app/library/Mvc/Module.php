@@ -158,6 +158,11 @@ abstract class Module implements ModuleInterface
         return $this->moduleDirectory;
     }
 
+    /**
+     * Get view directory
+     *
+     * @return null|string
+     */
     public function getViewDirectory()
     {
         return $this->viewsDirectory;
