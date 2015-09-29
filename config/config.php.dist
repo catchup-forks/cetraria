@@ -20,6 +20,7 @@ return [
         'appName'        => 'Cetraria',
         'version'        => '0.0.1',
         'migrationsDir'  => DOCROOT . 'app/migrations/',
+        'pidsDir'        => DOCROOT . 'var/pids/',
         'baseUri'        => '/',
         'debug'          => true,
         'titleSeparator' => '::',
