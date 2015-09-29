@@ -49,8 +49,13 @@ trait Initializer
             'dispatcher',
             'secureToken'
         ],
-        'cli'    => [],
-        'rest'   => [],
+        'cli' => [
+            'cache',
+            'annotations',
+            'database',
+            'secureToken'
+        ],
+        'rest' => [],
     ];
 
     protected $mode = 'normal';
