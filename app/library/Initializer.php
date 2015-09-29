@@ -143,11 +143,18 @@ trait Initializer
         if ('rest' !== $this->mode) {
             $namespaces['Cetraria\Modules'] = $registry->directories->modules;
             foreach ($registry->modules as $module) {
-                $moduleName              = 'Cetraria\Modules\\' . ucfirst($module);
-                $modules[$module]        = [
+                $moduleName  = 'Cetraria\Modules\\' . ucfirst($module);
+                $moduleDir   = $registry->directories->modules . ucfirst($module);
+                $tasksDir    = $moduleDir . DIRECTORY_SEPARATOR . 'Tasks';
+
+                $modules[$module] = [
                     'className' => $moduleName . '\Module',
-                    'path'      => $registry->directories->modules . ucfirst($module) . '/Module.php',
+                    'path'      => $moduleDir . DIRECTORY_SEPARATOR . 'Module.php',
                 ];
+
+                if (file_exists($tasksDir) && is_dir($tasksDir)) {
+                    $namespaces[$moduleName . '\Tasks'] = $tasksDir;
+                }
             }
         }
 
