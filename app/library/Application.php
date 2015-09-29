@@ -20,7 +20,6 @@ namespace Cetraria\Library;
 use Phalcon\Mvc\Application as PhApplication;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\DiInterface;
-use Phalcon\Config;
 use Phalcon\Registry;
 
 /**
