@@ -29,7 +29,19 @@ class Console extends PhConsole
     const DEFAULT_MODULE = 'core';
 
     /**
-     * Phalcon\Cli\Console constructor
+     * Array of arguments passed to the Application
+     * @var array
+     */
+    protected $argv = [];
+
+    /**
+     * The number of arguments passed to the Application
+     * @var int
+     */
+    protected $argc = 0;
+
+    /**
+     * Cetraria\Library\Console constructor
      *
      * @param DiInterface $di
      */
@@ -58,8 +70,23 @@ class Console extends PhConsole
 
             return $registry;
 
-        });;
+        });
 
         parent::__construct($di);
+    }
+
+    /**
+     * Set Application arguments
+     *
+     * @param  array $argv Array of arguments passed to the Application
+     * @param  int   $argc The number of arguments passed to the Application
+     * @return $this
+     */
+    public function setArgs(array $argv, $argc)
+    {
+        $this->argv = $argv;
+        $this->argc = $argc;
+
+        return $this;
     }
 }
