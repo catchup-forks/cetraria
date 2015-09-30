@@ -145,16 +145,11 @@ trait Initializer
             foreach ($registry->modules as $module) {
                 $moduleName  = 'Cetraria\Modules\\' . ucfirst($module);
                 $moduleDir   = $registry->directories->modules . ucfirst($module);
-                $tasksDir    = $moduleDir . DIRECTORY_SEPARATOR . 'Tasks';
 
                 $modules[$module] = [
                     'className' => $moduleName . '\Module',
                     'path'      => $moduleDir . DIRECTORY_SEPARATOR . 'Module.php',
                 ];
-
-                if (file_exists($tasksDir) && is_dir($tasksDir)) {
-                    $namespaces[$moduleName . '\Tasks'] = $tasksDir;
-                }
             }
         }
 
