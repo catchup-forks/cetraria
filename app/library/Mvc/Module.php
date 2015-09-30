@@ -132,7 +132,7 @@ abstract class Module implements ModuleInterface
                  * @var \Phalcon\Events\Event $event
                  */
                 if ($config->application->debug) {
-                    $logger = $di->get('logger', ['view']);
+                    $logger = $di->get('logger', ['debug']);
                     $logger->debug(sprintf('Event %s. Path: %s', $event->getType(), $view->getActiveRenderPath()));
                 }
 

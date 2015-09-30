@@ -164,14 +164,14 @@ trait Initializer
         $loader = new Loader;
         $loader->registerNamespaces($namespaces);
 
-        if (ENV_DEVELOPMENT === APPLICATION_ENV) {
+        if ($config->get('application')->debug) {
             $em->attach('loader', function ($event, $loader) use ($di) {
                 /**
                  * @var \Phalcon\Events\Event $event
                  * @var \Phalcon\Loader $loader
                  * @var \Phalcon\Logger\Adapter\File $logger
                  */
-                $logger = $di->get('logger', ['autoload']);
+                $logger = $di->get('logger', ['debug']);
 
                 if ('beforeCheckPath' == $event->getType()) {
                     $logger->debug('Before check path: ' . $loader->getCheckedPath());
