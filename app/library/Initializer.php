@@ -108,15 +108,15 @@ trait Initializer
         ErrorHandler::register();
 
         $mode = $this->mode;
-        $di->set('logger', function ($file = 'main', $format = null) use ($config, $mode) {
-            $config = $config->get('logger')->toArray();
-            $path   = $config['path'];
-            $date   = $config['date'];
-            $format = $format ?: $config['format'];
+        $di->set('logger', function ($format = null) use ($config, $mode) {
+            $config = $config->get('logger');
+            $format = $format ?: $config->format;
 
-            $logger = new FileLogger($path . APPLICATION_ENV . '.' . $mode . '.' . $file . '.log');
-            $formatter = new FormatterLine($format, $date);
+            $formatter = new FormatterLine($format, $config->date);
+
+            $logger = new FileLogger($config->path . 'application.log');
             $logger->setFormatter($formatter);
+            $logger->setLogLevel($config->logLevel);
 
             return $logger;
         });
@@ -171,14 +171,14 @@ trait Initializer
                  * @var \Phalcon\Loader $loader
                  * @var \Phalcon\Logger\Adapter\File $logger
                  */
-                $logger = $di->get('logger', ['debug']);
+                $logger = $di->get('logger');
 
                 if ('beforeCheckPath' == $event->getType()) {
-                    $logger->debug('Before check path: ' . $loader->getCheckedPath());
+                    $logger->debug('Before check path by Loader: ' . $loader->getCheckedPath());
                 }
 
                 if ('pathFound' == $event->getType()) {
-                    $logger->debug('Path found: ' . $loader->getFoundPath());
+                    $logger->debug('Path found by Loader: ' . $loader->getFoundPath());
                 }
 
                 if ('afterCheckClass' == $event->getType()) {
@@ -188,7 +188,7 @@ trait Initializer
                         'dirs'       => $loader->getDirs(),
                     ];
 
-                    $logger->debug(
+                    $logger->error(
                         'Class not found. Current loader settings: ' .
                         json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
                     );
