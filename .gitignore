@@ -12,7 +12,6 @@ vendor/
 
 # App config
 /config/development.php
-/config/config.php
 
 # Nginx config
 /config/nginx/development.conf

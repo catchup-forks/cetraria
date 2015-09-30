@@ -54,7 +54,7 @@ return [
     'error' => [
         'logger'    => DOCROOT . 'var/logs/error.log',
         'formatter' => [
-            'format' => '%date% ' . getenv('HOSTNAME') . ' php: [%type%] %message%',
+            'format' => '%date% ' . HOSTNAME . ' php: [%type%] %message%',
             'date'   => 'D j H:i:s',
         ],
         'controller' => 'error',
