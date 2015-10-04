@@ -17,10 +17,13 @@
 
 namespace Cetraria\Library;
 
-use Phalcon\Cli\Console as PhConsole;
-use Phalcon\DiInterface;
-use Phalcon\Di\FactoryDefault\Cli as CliDi;
+use Phalcon\Config;
 use Phalcon\Registry;
+use Phalcon\DiInterface;
+use Phalcon\Cli\Console           as PhConsole;
+use Phalcon\Di\FactoryDefault\Cli as CliDi;
+use Phalcon\Events\Manager        as EventsManager;
+
 
 class Console extends PhConsole
 {
@@ -88,5 +91,18 @@ class Console extends PhConsole
         $this->argc = $argc;
 
         return $this;
+    }
+
+    /**
+     * Initialize the Router.
+     *
+     * @param DiInterface   $di     Dependency Injector
+     * @param Config        $config App config
+     * @param EventsManager $em     Events Manager
+     *
+     * @return void
+     */
+    protected function initRouter(DiInterface $di, Config $config, EventsManager $em)
+    {
     }
 }
