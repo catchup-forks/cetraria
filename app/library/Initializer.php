@@ -17,6 +17,9 @@
 
 namespace Cetraria\Library;
 
+use SplFileObject;
+use RuntimeException;
+use DirectoryIterator;
 use Phalcon\Config;
 use Phalcon\Loader;
 use Phalcon\Mvc\Router;
@@ -350,7 +353,7 @@ trait Initializer
                     $controllerDir = $di->get('registry')->directories->modules . $moduleName . '/Controllers';
 
                     if (is_readable($controllerDir) && is_dir($controllerDir)) {
-                        $dir = new \DirectoryIterator($controllerDir);
+                        $dir = new DirectoryIterator($controllerDir);
 
                         foreach ($dir as $fileInfo) {
                             if ($fileInfo->isDot() || false === strpos($fileInfo->getBasename(), 'Controller.php')) {
@@ -422,10 +425,10 @@ trait Initializer
         $tokenFile = DOCROOT . '.secret';
 
         if (is_readable($tokenFile)) {
-            $line = (new \SplFileObject($tokenFile))->fgets();
+            $line = (new SplFileObject($tokenFile))->fgets();
         } else {
             $line = (new Random)->hex(64);
-            (new \SplFileObject($tokenFile, 'w'))->fwrite($line);
+            (new SplFileObject($tokenFile, 'w'))->fwrite($line);
         }
 
         $config->get('application')->offsetSet('token', $line);
@@ -444,7 +447,7 @@ trait Initializer
         $path = $path ?: DOCROOT . 'config' . DIRECTORY_SEPARATOR;
 
         if (!is_readable($path . 'config.php')) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Unable to read config from ' . $path . 'config.php'
             );
         }
@@ -456,8 +459,8 @@ trait Initializer
         }
 
         if (!$config instanceof Config) {
-            throw new \RuntimeException(
-                'Unable to read config. Config must be either an array or \Phalcon\Config instance.'
+            throw new RuntimeException(
+                sprintf('Unable to read config. Config must be either an array or %s instance.', Config::class)
             );
         }
 
