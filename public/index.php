@@ -9,4 +9,9 @@ require_once DOCROOT . 'app/library/Initializer.php';
 require_once DOCROOT . 'app/library/Application.php';
 
 $application = new Application;
-echo $application->init()->run();
+
+if (APPLICATION_ENV == ENV_TESTING) {
+    return $application->init()->run();
+} else {
+    echo $application->init()->run();
+}
