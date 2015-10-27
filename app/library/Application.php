@@ -75,7 +75,7 @@ class Application extends PhApplication
      */
     public function run()
     {
-        if (ENV_TEST === APPLICATION_ENV) {
+        if (ENV_TESTING === APPLICATION_ENV) {
             return $this;
         }
 

@@ -23,9 +23,9 @@ define('ENV_STAGING', 'staging');
 define('ENV_DEVELOPMENT', 'development');
 
 /**
- * @const ENV_TEST Application test stage
+ * @const ENV_TESTING Application test stage
  */
-define('ENV_TEST', 'test');
+define('ENV_TESTING', 'testing');
 
 /**
  * @const APPLICATION_ENV Current application stage
