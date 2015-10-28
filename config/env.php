@@ -1,10 +1,12 @@
 <?php
 
+use Dotenv\Dotenv;
+
 // Include Composer autoloader
 include __DIR__ . '/../vendor/autoload.php';
 
 // Load environment variables
-$dotenv = new Dotenv\Dotenv(realpath(dirname(__DIR__)));
+$dotenv = new Dotenv(realpath(dirname(__DIR__)));
 $dotenv->load();
 
 /**
@@ -55,10 +57,10 @@ define('NAMESPACE_SEPARATOR', '\\');
 /**
  * @const DEV_IP Developer IP mask
  */
-define('DEV_IP', getenv('DEV_IP'));
+define('DEV_IP', '192.168.');
 
 /**
- * @const DEV_IP Developer IP mask
+ * @const HOSTNAME Current hostname
  */
 define('HOSTNAME', explode('.', gethostname())[0]);
 
