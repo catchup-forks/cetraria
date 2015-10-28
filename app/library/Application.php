@@ -31,8 +31,6 @@ class Application extends PhApplication
 {
     use Initializer;
 
-    const DEFAULT_MODULE = 'core';
-
     /**
      * Application constructor
      *
@@ -51,7 +49,7 @@ class Application extends PhApplication
             // Setup Registry
             $registry = new Registry;
             $registry->offsetSet('modules', array_merge(
-                [self::DEFAULT_MODULE],
+                ['core'],
                 array_keys(array_filter($config->get('modules')->toArray()))
             ));
 

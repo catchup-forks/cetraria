@@ -29,8 +29,6 @@ class Console extends PhConsole
 {
     use Initializer;
 
-    const DEFAULT_MODULE = 'core';
-
     /**
      * Array of arguments passed to the Application
      * @var array
@@ -61,7 +59,7 @@ class Console extends PhConsole
             // Setup Registry
             $registry = new Registry;
             $registry->offsetSet('modules', array_merge(
-                [self::DEFAULT_MODULE],
+                ['core'],
                 array_keys(array_filter($config->get('modules')->toArray()))
             ));
 

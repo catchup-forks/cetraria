@@ -336,7 +336,6 @@ trait Initializer
             }
 
             $router->setDefaultModule('core');
-            $router->setDefaultNamespace('Cetraria\Modules\Core\Controllers');
             $router->removeExtraSlashes(true);
             $router->setEventsManager($em);
 
@@ -398,10 +397,7 @@ trait Initializer
                 $em->attach('dispatch', new ActionListener($di, $em));
             }
 
-            $moduleName = Application::DEFAULT_MODULE;
-            $namespace  = 'Cetraria\Modules\\' . ucfirst($moduleName) . '\Controllers';
-
-            $dispatcher->setDefaultNamespace($namespace);
+            $dispatcher->setDefaultNamespace('Cetraria\Modules\Cetraria\Controllers');
             $dispatcher->setEventsManager($em);
 
             return $dispatcher;
