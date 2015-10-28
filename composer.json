@@ -2,10 +2,11 @@
   "name": "sergeyklay/cetraria",
   "require": {
     "php": "~5.5",
-    "cetraria/meta": "1.0.x-dev",
+    "cetraria/meta": "dev-master",
     "phalcon/incubator": "2.0.*@dev",
     "phalcon/devtools": "2.0.*@dev",
-    "vlucas/phpdotenv": "~2.0"
+    "vlucas/phpdotenv": "dev-master",
+    "sergeyklay/php-ssh": "dev-dev"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "*",
