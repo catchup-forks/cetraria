@@ -170,7 +170,7 @@ trait Initializer
                  * @var \Phalcon\Loader $loader
                  * @var \Phalcon\Logger\Adapter\File $logger
                  */
-                $logger = $di->get('logger');
+                $logger = $di->getShared('logger');
 
                 if ('beforeCheckPath' == $event->getType()) {
                     $logger->debug('Before check path by Loader: ' . $loader->getCheckedPath());
@@ -422,16 +422,30 @@ trait Initializer
      */
     protected function initSecureToken(DiInterface $di, Config $config, EventsManager $em)
     {
-        $tokenFile = DOCROOT . '.secret';
+        $secret = null;
+        $logger = $di->getShared('logger');
 
-        if (is_readable($tokenFile)) {
-            $line = (new SplFileObject($tokenFile))->fgets();
-        } else {
-            $line = (new Random)->hex(64);
-            (new SplFileObject($tokenFile, 'w'))->fwrite($line);
+        if (is_readable(DOCROOT . '.env')) {
+            $envFile = new SplFileObject(DOCROOT . '.env', 'r+');
+            while (!$envFile->eof()) {
+                $possibleToken = $envFile->fgets();
+                if (preg_match('#^SECRET_TOKEN=\w+$#', $possibleToken)) {
+                    $secret = $possibleToken;
+                    $logger->info('Discovered the secret token.');
+                    break;
+                }
+            }
         }
 
-        $config->get('application')->offsetSet('token', $line);
+        if (!$secret) {
+            $secret = (new Random)->hex(64);
+            (new SplFileObject(DOCROOT . '.env', 'a+', false))->fwrite('SECRET_TOKEN='.$secret);
+            $logger->info('Created the secret token.');
+        }
+
+        if ($secret) {
+            $config->get('application')->offsetSet('token', $secret);
+        }
     }
 
     /**
