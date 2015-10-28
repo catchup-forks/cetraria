@@ -327,20 +327,16 @@ trait Initializer
         $di->setShared('router', function () use ($di, $config, $em) {
             $routerConfig = $config->get('router');
             $cache  = $di->get('dataCache');
-            $router = new AnnotationsRouter(false);
+            $router = new AnnotationsRouter();
 
-            $moduleName = Application::DEFAULT_MODULE;
-            $namespace  = 'Cetraria\Modules\\' . ucfirst($moduleName) . '\Controllers';
             $allModules = $di->get('registry')->modules;
 
             if (!isset($_GET['_url'])) {
                 $router->setUriSource(Router::URI_SOURCE_SERVER_REQUEST_URI);
             }
 
-            $router->setDefaultModule($moduleName);
-            $router->setDefaultNamespace($namespace);
-            $router->setDefaultController('index');
-            $router->setDefaultAction('index');
+            $router->setDefaultModule('core');
+            $router->setDefaultNamespace('Cetraria\Modules\Core\Controllers');
             $router->removeExtraSlashes(true);
             $router->setEventsManager($em);
 
@@ -351,6 +347,7 @@ trait Initializer
                 foreach ($allModules as $module) {
                     $moduleName = ucfirst($module);
                     $controllerDir = $di->get('registry')->directories->modules . $moduleName . '/Controllers';
+                    $namespace  = "Cetraria\\Modules\\{$moduleName}\\Controllers";
 
                     if (is_readable($controllerDir) && is_dir($controllerDir)) {
                         $dir = new DirectoryIterator($controllerDir);
