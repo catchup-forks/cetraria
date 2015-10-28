@@ -4,7 +4,7 @@
 # Composer
 composer.lock
 composer.phar
-vendor/
+/vendor/
 
 # Application environment variables
 .env
@@ -18,5 +18,5 @@ vendor/
 /config/nginx/production.conf
 
 # Phalcon Developer Tools
-public/webtools.config.php
-public/webtools.php
+/public/webtools.config.php
+/public/webtools.php
