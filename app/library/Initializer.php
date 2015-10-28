@@ -422,29 +422,20 @@ trait Initializer
      */
     protected function initSecureToken(DiInterface $di, Config $config, EventsManager $em)
     {
-        $secret = null;
+        $secretFile = DOCROOT . '.secret';
         $logger = $di->getShared('logger');
 
-        if (is_readable(DOCROOT . '.env')) {
-            $envFile = new SplFileObject(DOCROOT . '.env', 'r+');
-            while (!$envFile->eof()) {
-                $possibleToken = $envFile->fgets();
-                if (preg_match('#^SECRET_TOKEN=\w+$#', $possibleToken)) {
-                    $secret = $possibleToken;
-                    $logger->info('Discovered the secret token.');
-                    break;
-                }
-            }
-        }
-
-        if (!$secret) {
-            $secret = (new Random)->hex(64);
-            (new SplFileObject(DOCROOT . '.env', 'a+', false))->fwrite('SECRET_TOKEN='.$secret);
+        if (is_file($secretFile) && is_readable($secretFile)) {
+            $line = (new SplFileObject($secretFile))->fgets();
+            $logger->info('Discovered the secret token.');
+        } else {
+            $line = (new Random)->hex(64);
+            (new SplFileObject($secretFile, 'w'))->fwrite($line);
             $logger->info('Created the secret token.');
         }
 
-        if ($secret) {
-            $config->get('application')->offsetSet('token', $secret);
+        if ($line) {
+            $config->get('application')->offsetSet('token', $line);
         }
     }
 

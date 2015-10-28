@@ -8,6 +8,7 @@ vendor/
 
 # Application environment variables
 .env
+.secret
 
 # App config
 /config/development.php
