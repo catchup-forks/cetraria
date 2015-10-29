@@ -1,4 +1,4 @@
-#!/usr/local/bin/php
+#!/usr/bin/env php
 <?php
 
 use Cetraria\Library\Console;
@@ -11,6 +11,3 @@ require_once DOCROOT . 'app/library/Console.php';
 
 $application = new Console;
 $application->init('cli')->setArgs($argv, $argc);
-
-$application->handle(array('task' => 'Cetraria\Modules\Core\Tasks\Test'));
-$application->handle(array('task' => 'Cetraria\Modules\Vcs\Tasks\Test'));
