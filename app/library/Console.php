@@ -17,12 +17,18 @@
 
 namespace Cetraria\Library;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use FilesystemIterator;
 use Phalcon\Config;
 use Phalcon\Registry;
 use Phalcon\DiInterface;
 use Phalcon\Cli\Console           as PhConsole;
 use Phalcon\Di\FactoryDefault\Cli as CliDi;
 use Phalcon\Events\Manager        as EventsManager;
+use Cetraria\Library\Cli\Commands\CommandsListener;
+use Cetraria\Library\Cli\CommandRunner;
+use Cetraria\Library\Cli\Commands\CommandInterface;
 
 
 class Console extends PhConsole
@@ -92,7 +98,9 @@ class Console extends PhConsole
     }
 
     /**
-     * Initialize the Router.
+     * Initialize Commands.
+     *
+     * Recursively looks for Commands and attach them to the CommandRunner.
      *
      * @param DiInterface   $di     Dependency Injector
      * @param Config        $config App config
@@ -100,7 +108,56 @@ class Console extends PhConsole
      *
      * @return void
      */
-    protected function initRouter(DiInterface $di, Config $config, EventsManager $em)
+    protected function initCommands(DiInterface $di, Config $config, EventsManager $em)
     {
+        $di->setShared('runner', function () use ($di, $config, $em) {
+            $runner = new CommandRunner;
+
+            $em->attach('command', new CommandsListener);
+
+            $allModules = $di->get('registry')->modules;
+
+            foreach ($allModules as $module) {
+                $moduleName = ucfirst($module);
+                $commandDir = $di->get('registry')->directories->modules . $moduleName . '/Commands';
+
+                if (is_readable($commandDir) && is_dir($commandDir)) {
+                    $namespace = "Cetraria\\Modules\\{$moduleName}\\Commands";
+
+                    $directory = new RecursiveDirectoryIterator($commandDir);
+                    $directory->setFlags(FilesystemIterator::SKIP_DOTS);
+
+                    $iterator = new RecursiveIteratorIterator($directory);
+                    $iterator->rewind();
+
+                    while ($iterator->valid()) {
+                        if (false !== strpos($iterator->getBasename(), 'Command.php')) {
+                            $baseName = $iterator->getBasename();
+                            $commandFile = substr($iterator->getPathname(), strlen($commandDir) + 1);
+
+                            $possibleClass = substr($commandFile, 0, -(strlen($baseName) + 1)) . '\\' . $iterator->getBasename('.php');
+                            $possibleClass = str_replace('/', '\\', $namespace . '\\' . trim($possibleClass, '\\/'));
+
+                            // All magic is here
+                            if (class_exists($possibleClass)) {
+                                $command = new $possibleClass();
+
+                                if ($command instanceof CommandInterface) {
+                                    $command->setDI($di);
+                                    $runner->attach($command);
+                                }
+                            }
+                        }
+
+                        $iterator->next();
+                    }
+                }
+            }
+
+            $runner->setEventsManager($em);
+            $runner->setDI($di);
+
+            return $runner;
+        });
     }
 }

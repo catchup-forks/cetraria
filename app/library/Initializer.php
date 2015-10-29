@@ -56,7 +56,7 @@ trait Initializer
             'cache',
             'annotations',
             'database',
-            'router',
+            'commands',
             'secureToken'
         ],
         'rest' => [],
