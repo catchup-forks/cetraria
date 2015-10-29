@@ -56,8 +56,8 @@ trait Initializer
             'cache',
             'annotations',
             'database',
+            'secureToken',
             'commands',
-            'secureToken'
         ],
         'rest' => [],
     ];
@@ -405,7 +405,9 @@ trait Initializer
     }
 
     /**
-     * Using true secure token without needs of commit it or store somewhere
+     * Initialize the Secure Token.
+     *
+     * Using true secure token without needs of commit it or store somewhere.
      *
      * @param DiInterface   $di     Dependency Injector
      * @param Config        $config App config
@@ -433,7 +435,7 @@ trait Initializer
     }
 
     /**
-     * Prepare and return config
+     * Prepare and return the Config.
      *
      * @param  string $path Config path [Optional]
      * @return Config

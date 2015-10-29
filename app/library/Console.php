@@ -36,18 +36,6 @@ class Console extends PhConsole
     use Initializer;
 
     /**
-     * Array of arguments passed to the Application
-     * @var array
-     */
-    protected $argv = [];
-
-    /**
-     * The number of arguments passed to the Application
-     * @var int
-     */
-    protected $argc = 0;
-
-    /**
      * Cetraria\Library\Console constructor
      *
      * @param DiInterface $di
@@ -83,18 +71,18 @@ class Console extends PhConsole
     }
 
     /**
-     * Set Application arguments
+     * Runt the CommandRunner
      *
      * @param  array $argv Array of arguments passed to the Application
      * @param  int   $argc The number of arguments passed to the Application
-     * @return $this
      */
-    public function setArgs(array $argv, $argc)
+    public function run(array $argv, $argc)
     {
-        $this->argv = $argv;
-        $this->argc = $argc;
+        /** @var \Cetraria\Library\Cli\CommandRunner $runner */
+        $runner = $this->getDI()->get('runner');
 
-        return $this;
+        $runner->setArgs($argv, $argc);
+        $runner->run();
     }
 
     /**

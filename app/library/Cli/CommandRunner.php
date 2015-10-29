@@ -22,16 +22,50 @@ use Phalcon\Di\Injectable;
 
 class CommandRunner extends Injectable
 {
+    /**
+     * Array of arguments passed to the Application
+     * @var array
+     */
+    protected $argv = [];
+
+    /**
+     * The number of arguments passed to the Application
+     * @var int
+     */
+    protected $argc = 0;
+
+    /**
+     * Current commands
+     * @var CommandInterface[]
+     */
     protected $commands = [];
 
     /**
      * Adds commands to the stack
      *
      * @param CommandInterface $command
+     * @return $this
      */
     public function attach(CommandInterface $command)
     {
         $this->commands[spl_object_hash($command)] = $command;
+
+        return $this;
+    }
+
+    /**
+     * Set Application arguments
+     *
+     * @param  array $argv Array of arguments passed to the Application
+     * @param  int   $argc The number of arguments passed to the Application
+     * @return $this
+     */
+    public function setArgs(array $argv, $argc)
+    {
+        $this->argv = $argv;
+        $this->argc = $argc;
+
+        return $this;
     }
 
     /**
@@ -42,5 +76,15 @@ class CommandRunner extends Injectable
     public function getCommands()
     {
         return $this->commands;
+    }
+
+    /**
+     * Run Commands
+     *
+     * @throws RunnerException
+     */
+    public function run()
+    {
+        echo 'We are here', PHP_EOL;
     }
 }

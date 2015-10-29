@@ -10,4 +10,6 @@ require_once DOCROOT . 'app/library/Initializer.php';
 require_once DOCROOT . 'app/library/Console.php';
 
 $application = new Console;
-$application->init('cli')->setArgs($argv, $argc);
+$application->init('cli');
+
+$application->run($argv, $argc);
