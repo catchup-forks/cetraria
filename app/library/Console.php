@@ -26,10 +26,10 @@ use Phalcon\DiInterface;
 use Phalcon\Cli\Console           as PhConsole;
 use Phalcon\Di\FactoryDefault\Cli as CliDi;
 use Phalcon\Events\Manager        as EventsManager;
-use Cetraria\Library\Cli\Commands\CommandsListener;
-use Cetraria\Library\Cli\CommandRunner;
-use Cetraria\Library\Cli\Commands\CommandInterface;
-
+use Cetraria\Console\Commands\CommandsListener;
+use Cetraria\Console\Commands\CommandInterface;
+use Cetraria\Console\CommandRunner;
+use Cetraria\Console\RunnerInterface;
 
 class Console extends PhConsole
 {
@@ -78,7 +78,7 @@ class Console extends PhConsole
      */
     public function run(array $argv, $argc)
     {
-        /** @var \Cetraria\Library\Cli\CommandRunner $runner */
+        /** @var RunnerInterface $runner */
         $runner = $this->getDI()->get('runner');
 
         $runner->setArgs($argv, $argc);
