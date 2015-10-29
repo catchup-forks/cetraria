@@ -19,6 +19,13 @@ namespace Cetraria\Library\Cli\Commands;
 
 use Phalcon\Di\InjectionAwareInterface;
 
+/**
+ * Command Interface
+ *
+ * @package   Cetraria\Library\Cli\Commands
+ * @copyright Copyright (c) 2011-2015 Phalcon Team (team@phalconphp.com)
+ * @license   New BSD License
+ */
 interface CommandInterface extends InjectionAwareInterface
 {
 }

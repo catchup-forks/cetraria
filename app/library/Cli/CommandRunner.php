@@ -20,7 +20,14 @@ namespace Cetraria\Library\Cli;
 use Cetraria\Library\Cli\Commands\CommandInterface;
 use Phalcon\Di\Injectable;
 
-class CommandRunner extends Injectable
+/**
+ * Command Runner
+ *
+ * @package   Cetraria\Library\Cli
+ * @copyright Copyright (c) 2011-2015 Phalcon Team (team@phalconphp.com)
+ * @license   New BSD License
+ */
+class CommandRunner extends Injectable implements RunnerInterface
 {
     /**
      * Array of arguments passed to the Application
@@ -41,7 +48,77 @@ class CommandRunner extends Injectable
     protected $commands = [];
 
     /**
-     * Adds commands to the stack
+     * Application name
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * Application version
+     * @var string
+     */
+    protected $version;
+
+    /**
+     * Runner Constructor.
+     *
+     * @param string $name    The name of the application
+     * @param string $version The version of the application
+     */
+    public function __construct($name = 'UNKNOWN', $version = 'UNKNOWN')
+    {
+        $this->name = $name;
+        $this->version = $version;
+    }
+
+    /**
+     * Gets the name of the application.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Sets the application name.
+     *
+     * @param string $name The application name
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Gets the application version.
+     *
+     * @return string
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    /**
+     * Sets the application version.
+     *
+     * @param string $version The application version
+     * @return $this
+     */
+    public function setVersion($version)
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
      *
      * @param CommandInterface $command
      * @return $this
@@ -54,7 +131,17 @@ class CommandRunner extends Injectable
     }
 
     /**
-     * Set Application arguments
+     * {@inheritdoc}
+     *
+     * @return CommandInterface[]
+     */
+    public function getCommands()
+    {
+        return $this->commands;
+    }
+
+    /**
+     * Set Application arguments.
      *
      * @param  array $argv Array of arguments passed to the Application
      * @param  int   $argc The number of arguments passed to the Application
@@ -66,16 +153,6 @@ class CommandRunner extends Injectable
         $this->argc = $argc;
 
         return $this;
-    }
-
-    /**
-     * Returns the commands registered in the script
-     *
-     * @return CommandInterface[]
-     */
-    public function getCommands()
-    {
-        return $this->commands;
     }
 
     /**

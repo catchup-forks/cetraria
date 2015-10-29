@@ -17,15 +17,29 @@
 
 namespace Cetraria\Library\Cli;
 
-use Phalcon\Cli\Console\Exception;
+use Cetraria\Library\Cli\Commands\CommandInterface;
 
 /**
- * Runner Exception
+ * The Command Runner Interface
  *
  * @package   Cetraria\Library\Cli
  * @copyright Copyright (c) 2011-2015 Phalcon Team (team@phalconphp.com)
  * @license   New BSD License
  */
-class RunnerException extends Exception
+interface RunnerInterface
 {
+    /**
+     * Adds commands to the stack.
+     *
+     * @param CommandInterface $command
+     * @return $this
+     */
+    public function attach(CommandInterface $command);
+
+    /**
+     * Gets the Commands registered in the Command Runner.
+     *
+     * @return CommandInterface[]
+     */
+    public function getCommands();
 }

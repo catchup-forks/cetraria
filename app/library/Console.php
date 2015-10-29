@@ -99,7 +99,10 @@ class Console extends PhConsole
     protected function initCommands(DiInterface $di, Config $config, EventsManager $em)
     {
         $di->setShared('runner', function () use ($di, $config, $em) {
-            $runner = new CommandRunner;
+            $runner = new CommandRunner(
+                $config->get('application')->appName,
+                $config->get('application')->version
+            );
 
             $em->attach('command', new CommandsListener);
 
@@ -128,7 +131,7 @@ class Console extends PhConsole
 
                             // All magic is here
                             if (class_exists($possibleClass)) {
-                                $command = new $possibleClass();
+                                $command = new $possibleClass($runner);
 
                                 if ($command instanceof CommandInterface) {
                                     $command->setDI($di);
