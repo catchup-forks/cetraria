@@ -18,6 +18,7 @@
 namespace Cetraria\Library\Cli\Commands;
 
 use Phalcon\Di\InjectionAwareInterface;
+use Cetraria\Library\Cli\RunnerInterface;
 
 /**
  * Command Interface
@@ -28,4 +29,18 @@ use Phalcon\Di\InjectionAwareInterface;
  */
 interface CommandInterface extends InjectionAwareInterface
 {
+    /**
+     * Gets the Command Runner.
+     *
+     * @return RunnerInterface
+     */
+    public function getRunner();
+
+    /**
+     * Sets the Command Runner.
+     *
+     * @param RunnerInterface $runner The Command Runner
+     * @return $this
+     */
+    public function setRunner(RunnerInterface $runner);
 }

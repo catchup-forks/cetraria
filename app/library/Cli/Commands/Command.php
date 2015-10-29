@@ -46,7 +46,7 @@ abstract class Command extends Injectable implements CommandInterface
     }
 
     /**
-     * Gets the Command Runner.
+     * {@inheritdoc}
      *
      * @return RunnerInterface
      */
@@ -56,7 +56,7 @@ abstract class Command extends Injectable implements CommandInterface
     }
 
     /**
-     * Sets the Command Runner.
+     * {@inheritdoc}
      *
      * @param RunnerInterface $runner The Command Runner
      * @return $this
