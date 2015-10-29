@@ -72,7 +72,7 @@ class CommandRunner extends Injectable implements RunnerInterface
     }
 
     /**
-     * Gets the name of the application.
+     * {@inheritdoc}
      *
      * @return string
      */
@@ -82,7 +82,7 @@ class CommandRunner extends Injectable implements RunnerInterface
     }
 
     /**
-     * Sets the application name.
+     * {@inheritdoc}
      *
      * @param string $name The application name
      * @return $this
@@ -95,7 +95,7 @@ class CommandRunner extends Injectable implements RunnerInterface
     }
 
     /**
-     * Gets the application version.
+     * {@inheritdoc}
      *
      * @return string
      */
@@ -105,7 +105,7 @@ class CommandRunner extends Injectable implements RunnerInterface
     }
 
     /**
-     * Sets the application version.
+     * {@inheritdoc}
      *
      * @param string $version The application version
      * @return $this
@@ -141,7 +141,7 @@ class CommandRunner extends Injectable implements RunnerInterface
     }
 
     /**
-     * Set Application arguments.
+     * {@inheritdoc}
      *
      * @param  array $argv Array of arguments passed to the Application
      * @param  int   $argc The number of arguments passed to the Application
@@ -156,7 +156,7 @@ class CommandRunner extends Injectable implements RunnerInterface
     }
 
     /**
-     * Run Commands
+     * {@inheritdoc}
      *
      * @throws RunnerException
      */

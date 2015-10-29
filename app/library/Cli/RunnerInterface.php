@@ -42,4 +42,50 @@ interface RunnerInterface
      * @return CommandInterface[]
      */
     public function getCommands();
+
+    /**
+     * Gets Application name.
+     *
+     * @return string
+     */
+    public function getName();
+
+    /**
+     * Sets the Application name.
+     *
+     * @param string $name The application name
+     * @return $this
+     */
+    public function setName($name);
+
+    /**
+     * Gets the Application version.
+     *
+     * @return string
+     */
+    public function getVersion();
+
+    /**
+     * Sets the Application version.
+     *
+     * @param string $version The application version
+     * @return $this
+     */
+    public function setVersion($version);
+
+    /**
+     * Sets Application arguments.
+     *
+     * @param  array $argv Array of arguments passed to the Application
+     * @param  int   $argc The number of arguments passed to the Application
+     * @return $this
+     */
+    public function setArgs(array $argv, $argc);
+
+    /**
+     * Runs Commands.
+     *
+     * @throws RunnerException
+     */
+    public function run();
 }
