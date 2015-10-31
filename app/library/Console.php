@@ -28,7 +28,7 @@ use Phalcon\Di\FactoryDefault\Cli as CliDi;
 use Phalcon\Events\Manager        as EventsManager;
 use Cetraria\Console\Commands\CommandsListener;
 use Cetraria\Console\Commands\CommandInterface;
-use Cetraria\Console\CommandRunner;
+use Cetraria\Console\Runner as CommandRunner;
 use Cetraria\Console\RunnerInterface;
 
 class Console extends PhConsole
@@ -71,7 +71,7 @@ class Console extends PhConsole
     }
 
     /**
-     * Runt the CommandRunner
+     * Runt the Command Runner
      *
      * @param  array $argv Array of arguments passed to the Application
      * @param  int   $argc The number of arguments passed to the Application
@@ -131,7 +131,7 @@ class Console extends PhConsole
 
                             // All magic is here
                             if (class_exists($possibleClass)) {
-                                $command = new $possibleClass($runner);
+                                $command = new $possibleClass();
 
                                 if ($command instanceof CommandInterface) {
                                     $command->setDI($di);
